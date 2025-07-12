@@ -1,0 +1,42 @@
+Create a full-stack Python app that uses VAPI (voice AI) to act as a voice-based therapeutic assessment agent.
+
+✨ Functional Overview:
+1. The app allows a user to upload a Zoom therapy session audio file (MP3, WAV).
+2. The app transcribes the session using OpenAI Whisper API (or another speech-to-text service).
+3. Once transcribed, the app analyzes the content using AI and NLP models.
+4. The analysis uses a custom framework inspired by:
+   - Carl Rogers (empathy, genuineness, positive regard)
+   - Sigmund Freud (unconscious material, symbolic language)
+   - Albert Ellis & Aaron Beck (CBT, REBT – belief reframe, irrational thought detection)
+   - Melanie Klein (early experience, symbolic processing)
+   - Virginia Satir (family dynamics, communication)
+   - Martin Seligman (positive psychology, strength use, PERMA model)
+
+📈 Assessment Output:
+- The app should output a structured report with 7 domain scores:
+   1. Emotional safety & relational depth (Rogers)
+   2. Unconscious pattern emergence (Freud, Klein)
+   3. Cognitive restructuring (Ellis, Beck)
+   4. Communication/family role changes (Satir)
+   5. Strengths and well-being (Seligman)
+   6. Narrative/identity coherence
+   7. Behavioral activation in real life
+
+🎤 Voice-based interface (via VAPI):
+- A voice agent allows the user to ask: “Am I making progress in therapy?” or “What themes came up in today’s session?”
+- The agent responds using GPT-based summarization of the session, using therapeutic language informed by the above theorists.
+
+📦 Stack:
+- Python (Flask or FastAPI backend)
+- VAPI for voice interaction
+- OpenAI Whisper or AssemblyAI for transcription
+- OpenAI GPT-4 API for analysis
+- HTML/JS frontend or Streamlit (optional)
+- Replit-hosted for easy deployment
+
+💡 Bonus:
+- Allow download of a PDF progress report
+- Track scores over time (session history)
+- Optional: Zoom API integration to auto-fetch recordings
+
+Ensure the app respects user privacy and stores files securely. Use encrypted storage or allow local-only processing mode.
