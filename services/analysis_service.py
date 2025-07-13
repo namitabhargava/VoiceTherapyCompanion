@@ -165,6 +165,9 @@ class AnalysisService:
             # Generate overall insights and recommendations
             overall_insights = self._generate_overall_insights(transcript, detailed_analysis, negative_patterns)
             
+            # Evaluate therapist performance
+            therapist_evaluation = self._evaluate_therapist_performance(transcript, detailed_analysis, negative_patterns)
+            
             return {
                 'domain_scores': adjusted_scores,
                 'detailed_analysis': detailed_analysis,
@@ -175,6 +178,7 @@ class AnalysisService:
                 'progress_indicators': overall_insights['progress_indicators'],
                 'therapy_effectiveness': self._assess_therapy_effectiveness(adjusted_scores, negative_patterns),
                 'warning_signs': self._generate_warning_signs(negative_patterns),
+                'therapist_evaluation': therapist_evaluation,
                 'analysis_timestamp': datetime.now().isoformat()
             }
             
@@ -346,6 +350,246 @@ class AnalysisService:
             })
         
         return warning_signs
+    
+    def _evaluate_therapist_performance(self, transcript, detailed_analysis, negative_patterns):
+        """Evaluate therapist's performance based on conversation analysis"""
+        try:
+            # Extract therapist responses from transcript
+            therapist_responses = []
+            client_responses = []
+            
+            lines = transcript.strip().split('\n')
+            for line in lines:
+                line = line.strip()
+                if line.startswith('Therapist:'):
+                    therapist_responses.append(line.replace('Therapist:', '').strip())
+                elif line.startswith('Client:'):
+                    client_responses.append(line.replace('Client:', '').strip())
+            
+            # Analyze therapist performance across multiple dimensions
+            evaluation = {
+                'overall_score': 0,
+                'empathy_score': 0,
+                'communication_score': 0,
+                'technique_score': 0,
+                'professional_score': 0,
+                'strengths': [],
+                'areas_for_improvement': [],
+                'specific_feedback': []
+            }
+            
+            # Evaluate empathy and emotional attunement
+            empathy_score = self._evaluate_therapist_empathy(therapist_responses, client_responses)
+            evaluation['empathy_score'] = empathy_score
+            
+            # Evaluate communication skills
+            communication_score = self._evaluate_therapist_communication(therapist_responses, client_responses)
+            evaluation['communication_score'] = communication_score
+            
+            # Evaluate therapeutic techniques
+            technique_score = self._evaluate_therapist_techniques(therapist_responses, detailed_analysis)
+            evaluation['technique_score'] = technique_score
+            
+            # Evaluate professional boundaries and ethics
+            professional_score = self._evaluate_therapist_professionalism(therapist_responses, negative_patterns)
+            evaluation['professional_score'] = professional_score
+            
+            # Calculate overall score
+            evaluation['overall_score'] = round((empathy_score + communication_score + technique_score + professional_score) / 4, 1)
+            
+            # Generate strengths and improvement areas
+            evaluation['strengths'] = self._identify_therapist_strengths(evaluation)
+            evaluation['areas_for_improvement'] = self._identify_therapist_improvements(evaluation, negative_patterns)
+            evaluation['specific_feedback'] = self._generate_specific_therapist_feedback(therapist_responses, evaluation)
+            
+            return evaluation
+            
+        except Exception as e:
+            st.warning(f"Therapist evaluation error: {str(e)}")
+            return {
+                'overall_score': 5,
+                'empathy_score': 5,
+                'communication_score': 5,
+                'technique_score': 5,
+                'professional_score': 5,
+                'strengths': ['Analysis limited due to processing error'],
+                'areas_for_improvement': ['Unable to analyze due to processing error'],
+                'specific_feedback': ['Detailed evaluation unavailable']
+            }
+    
+    def _evaluate_therapist_empathy(self, therapist_responses, client_responses):
+        """Evaluate therapist's empathy and emotional attunement"""
+        if not therapist_responses:
+            return 5
+        
+        empathy_indicators = {
+            'reflective_statements': ['I hear', 'it sounds like', 'I understand', 'that must', 'I can see'],
+            'emotional_validation': ['feel', 'feeling', 'emotion', 'difficult', 'challenging'],
+            'paraphrasing': ['so what you\'re saying', 'if I understand', 'let me make sure'],
+            'empathetic_responses': ['that\'s understandable', 'I can imagine', 'that makes sense']
+        }
+        
+        score = 5  # Base score
+        total_responses = len(therapist_responses)
+        
+        for response in therapist_responses:
+            response_lower = response.lower()
+            
+            # Check for empathy indicators
+            for category, indicators in empathy_indicators.items():
+                if any(indicator in response_lower for indicator in indicators):
+                    score += 0.5
+                    break
+        
+        # Normalize score
+        return min(10, max(1, round(score / total_responses * 10, 1)))
+    
+    def _evaluate_therapist_communication(self, therapist_responses, client_responses):
+        """Evaluate therapist's communication skills"""
+        if not therapist_responses:
+            return 5
+        
+        communication_factors = {
+            'open_questions': ['how', 'what', 'when', 'where', 'why', 'tell me more'],
+            'clarifying_questions': ['can you explain', 'what do you mean', 'can you give me'],
+            'summarizing': ['so far we\'ve', 'to summarize', 'what I\'m hearing'],
+            'appropriate_responses': ['that\'s interesting', 'good point', 'thank you for sharing']
+        }
+        
+        score = 5  # Base score
+        total_responses = len(therapist_responses)
+        
+        for response in therapist_responses:
+            response_lower = response.lower()
+            
+            # Check for good communication indicators
+            for category, indicators in communication_factors.items():
+                if any(indicator in response_lower for indicator in indicators):
+                    score += 0.4
+                    break
+            
+            # Penalize for poor communication
+            if len(response) < 10:  # Very short responses
+                score -= 0.2
+            elif response.count('?') > 3:  # Too many questions
+                score -= 0.1
+        
+        return min(10, max(1, round(score / total_responses * 10, 1)))
+    
+    def _evaluate_therapist_techniques(self, therapist_responses, detailed_analysis):
+        """Evaluate therapist's use of therapeutic techniques"""
+        if not therapist_responses:
+            return 5
+        
+        technique_indicators = {
+            'cognitive_techniques': ['thought', 'belief', 'thinking', 'perspective', 'view'],
+            'behavioral_techniques': ['action', 'behavior', 'activity', 'practice', 'try'],
+            'psychodynamic_techniques': ['pattern', 'relationship', 'past', 'childhood', 'family'],
+            'person_centered': ['you', 'your', 'feel', 'experience', 'important to you']
+        }
+        
+        score = 5  # Base score
+        techniques_used = 0
+        
+        for response in therapist_responses:
+            response_lower = response.lower()
+            
+            for category, indicators in technique_indicators.items():
+                if any(indicator in response_lower for indicator in indicators):
+                    techniques_used += 1
+                    break
+        
+        # Bonus for technique variety
+        if techniques_used > len(therapist_responses) * 0.3:
+            score += 2
+        elif techniques_used > len(therapist_responses) * 0.1:
+            score += 1
+        
+        return min(10, max(1, round(score, 1)))
+    
+    def _evaluate_therapist_professionalism(self, therapist_responses, negative_patterns):
+        """Evaluate therapist's professional boundaries and ethics"""
+        score = 8  # Start with high professional score
+        
+        # Check for negative patterns that might indicate therapist issues
+        if 'therapeutic_alliance' in negative_patterns:
+            score -= 2
+        if 'therapeutic_rupture' in negative_patterns:
+            score -= 3
+        
+        # Check for professional language
+        for response in therapist_responses:
+            response_lower = response.lower()
+            
+            # Positive professional indicators
+            if any(word in response_lower for word in ['understand', 'explore', 'together', 'support']):
+                score += 0.1
+            
+            # Negative indicators
+            if any(word in response_lower for word in ['you should', 'you must', 'wrong', 'bad']):
+                score -= 0.5
+        
+        return min(10, max(1, round(score, 1)))
+    
+    def _identify_therapist_strengths(self, evaluation):
+        """Identify therapist's strengths based on evaluation scores"""
+        strengths = []
+        
+        if evaluation['empathy_score'] >= 7:
+            strengths.append("Shows strong empathy and emotional attunement with client")
+        if evaluation['communication_score'] >= 7:
+            strengths.append("Demonstrates effective communication skills")
+        if evaluation['technique_score'] >= 7:
+            strengths.append("Uses appropriate therapeutic techniques")
+        if evaluation['professional_score'] >= 8:
+            strengths.append("Maintains professional boundaries and ethics")
+        
+        if not strengths:
+            strengths.append("Shows basic therapeutic competency")
+        
+        return strengths
+    
+    def _identify_therapist_improvements(self, evaluation, negative_patterns):
+        """Identify areas where therapist could improve"""
+        improvements = []
+        
+        if evaluation['empathy_score'] < 6:
+            improvements.append("Could improve empathetic responses and emotional validation")
+        if evaluation['communication_score'] < 6:
+            improvements.append("Could enhance communication skills and active listening")
+        if evaluation['technique_score'] < 6:
+            improvements.append("Could expand use of therapeutic techniques")
+        if evaluation['professional_score'] < 7:
+            improvements.append("Should focus on maintaining professional boundaries")
+        
+        # Add specific improvements based on negative patterns
+        if 'therapeutic_alliance' in negative_patterns:
+            improvements.append("Work on building stronger therapeutic alliance with client")
+        if 'therapeutic_rupture' in negative_patterns:
+            improvements.append("Address and repair therapeutic relationship ruptures")
+        
+        return improvements
+    
+    def _generate_specific_therapist_feedback(self, therapist_responses, evaluation):
+        """Generate specific feedback for the therapist"""
+        feedback = []
+        
+        if evaluation['overall_score'] >= 8:
+            feedback.append("Overall excellent therapeutic performance")
+        elif evaluation['overall_score'] >= 6:
+            feedback.append("Good therapeutic performance with room for growth")
+        else:
+            feedback.append("Therapeutic performance needs improvement")
+        
+        # Add specific suggestions based on response analysis
+        if len(therapist_responses) > 0:
+            avg_length = sum(len(response) for response in therapist_responses) / len(therapist_responses)
+            if avg_length < 50:
+                feedback.append("Consider providing more detailed responses to clients")
+            elif avg_length > 200:
+                feedback.append("Consider being more concise in responses")
+        
+        return feedback
     
     def _analyze_with_providers(self, prompt, system_context):
         """Try different AI providers for analysis"""

@@ -869,8 +869,130 @@ def display_analysis_results(analysis):
             </div>
             """, unsafe_allow_html=True)
     
+    # Therapist evaluation
+    therapist_evaluation = analysis.get('therapist_evaluation')
+    if therapist_evaluation:
+        display_therapist_evaluation(therapist_evaluation)
+    
     # Progress summary
     show_progress_summary(analysis)
+
+def display_therapist_evaluation(therapist_evaluation):
+    """Display therapist evaluation results"""
+    st.subheader("👨‍⚕️ Therapist Performance Analysis")
+    
+    # Overall score display
+    overall_score = therapist_evaluation.get('overall_score', 5)
+    
+    # Create color coding for therapist score
+    if overall_score >= 8:
+        color = '#28a745'
+        status = 'Excellent'
+    elif overall_score >= 6:
+        color = '#17a2b8'
+        status = 'Good'
+    elif overall_score >= 4:
+        color = '#ffc107'
+        status = 'Adequate'
+    else:
+        color = '#dc3545'
+        status = 'Needs Improvement'
+    
+    st.markdown(f"""
+    <div style="background: white; border-radius: 10px; padding: 1.5rem; margin: 1rem 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+        <h3 style="color: #2d3436; margin: 0 0 1rem 0;">Overall Therapist Performance</h3>
+        <div style="font-size: 2.5rem; font-weight: bold; color: {color}; margin: 0.5rem 0;">
+            {overall_score}/10
+        </div>
+        <div style="background: {color}; color: white; padding: 0.5rem 1rem; border-radius: 20px; display: inline-block;">
+            {status}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Performance breakdown
+    st.subheader("Performance Breakdown")
+    
+    performance_areas = {
+        'empathy_score': {'title': 'Empathy & Emotional Attunement', 'icon': '❤️'},
+        'communication_score': {'title': 'Communication Skills', 'icon': '💬'},
+        'technique_score': {'title': 'Therapeutic Techniques', 'icon': '🎯'},
+        'professional_score': {'title': 'Professional Boundaries', 'icon': '⚖️'}
+    }
+    
+    cols = st.columns(2)
+    col_index = 0
+    
+    for area, info in performance_areas.items():
+        score = therapist_evaluation.get(area, 5)
+        
+        # Determine color based on score
+        if score >= 7:
+            progress_color = '#28a745'
+            level = 'Strong'
+        elif score >= 5:
+            progress_color = '#17a2b8'
+            level = 'Good'
+        else:
+            progress_color = '#ffc107'
+            level = 'Needs Work'
+        
+        with cols[col_index % 2]:
+            st.markdown(f"""
+            <div style="background: white; border-radius: 10px; padding: 1.5rem; margin: 1rem 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <span style="font-size: 2rem;">{info['icon']}</span>
+                    <div>
+                        <h4 style="margin: 0; color: #2d3436;">{info['title']}</h4>
+                        <p style="margin: 0; color: #636e72; font-size: 0.9rem;">{level}</p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="flex: 1; background: #f1f3f4; border-radius: 10px; height: 8px;">
+                        <div style="width: {score*10}%; background: {progress_color}; height: 100%; border-radius: 10px;"></div>
+                    </div>
+                    <span style="font-weight: 600; color: {progress_color};">{score:.1f}/10</span>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        col_index += 1
+    
+    # Strengths and areas for improvement
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        strengths = therapist_evaluation.get('strengths', [])
+        if strengths:
+            st.subheader("✅ Therapist Strengths")
+            for strength in strengths:
+                st.markdown(f"""
+                <div style="background: #e8f5e8; border-radius: 8px; padding: 1rem; margin: 0.5rem 0; border-left: 3px solid #28a745;">
+                    {strength}
+                </div>
+                """, unsafe_allow_html=True)
+    
+    with col2:
+        improvements = therapist_evaluation.get('areas_for_improvement', [])
+        if improvements:
+            st.subheader("🔄 Areas for Improvement")
+            for improvement in improvements:
+                st.markdown(f"""
+                <div style="background: #fff3cd; border-radius: 8px; padding: 1rem; margin: 0.5rem 0; border-left: 3px solid #ffc107;">
+                    {improvement}
+                </div>
+                """, unsafe_allow_html=True)
+    
+    # Specific feedback
+    feedback = therapist_evaluation.get('specific_feedback', [])
+    if feedback:
+        st.subheader("💭 Specific Feedback")
+        for item in feedback:
+            st.markdown(f"""
+            <div style="background: #f8f9fa; border-radius: 8px; padding: 1rem; margin: 0.5rem 0; border-left: 3px solid #667eea;">
+                {item}
+            </div>
+            """, unsafe_allow_html=True)
 
 def get_overall_status(avg_score):
     """Get overall status based on average score"""
