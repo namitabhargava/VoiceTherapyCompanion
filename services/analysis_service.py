@@ -30,10 +30,95 @@ class AnalysisService:
             'local': self._analyze_with_local_model
         }
         
+    def _detect_negative_patterns(self, transcript):
+        """Detect negative patterns and warning signs that indicate therapy is not working well"""
+        
+        # Define negative indicators for each therapeutic approach
+        negative_indicators = {
+            'therapeutic_alliance': [
+                "I don't feel understood",
+                "therapist doesn't get it",
+                "waste of time",
+                "not helping",
+                "doesn't listen",
+                "judgmental",
+                "rushed",
+                "distracted",
+                "uncomfortable",
+                "don't trust"
+            ],
+            'emotional_deterioration': [
+                "getting worse",
+                "more depressed",
+                "more anxious",
+                "hopeless",
+                "suicidal thoughts",
+                "can't cope",
+                "overwhelmed",
+                "breaking down",
+                "lost control",
+                "spiraling"
+            ],
+            'resistance_patterns': [
+                "nothing works",
+                "tried everything",
+                "won't change",
+                "can't do it",
+                "too difficult",
+                "pointless",
+                "give up",
+                "no hope",
+                "stuck",
+                "same problems"
+            ],
+            'therapeutic_rupture': [
+                "angry at therapist",
+                "disappointed",
+                "frustrated with therapy",
+                "want to quit",
+                "not coming back",
+                "wasting money",
+                "not worth it",
+                "better off alone",
+                "therapy failed"
+            ],
+            'stagnation_signs': [
+                "no progress",
+                "same place",
+                "not moving forward",
+                "stuck in patterns",
+                "repeating cycles",
+                "no improvement",
+                "months with no change",
+                "going in circles"
+            ]
+        }
+        
+        # Analyze transcript for negative patterns
+        transcript_lower = transcript.lower()
+        detected_patterns = {}
+        
+        for category, indicators in negative_indicators.items():
+            matches = []
+            for indicator in indicators:
+                if indicator in transcript_lower:
+                    matches.append(indicator)
+            
+            if matches:
+                detected_patterns[category] = {
+                    'severity': len(matches) / len(indicators),  # Proportion of indicators found
+                    'indicators': matches[:5]  # First 5 matches
+                }
+        
+        return detected_patterns
+    
     def analyze_session(self, transcript):
         """Comprehensive analysis of therapy session using multiple frameworks"""
         try:
             st.info("Analyzing session with multiple therapeutic frameworks...")
+            
+            # First, detect negative patterns and warning signs
+            negative_patterns = self._detect_negative_patterns(transcript)
             
             # Domain-specific analyses
             domain_scores = {}
@@ -74,16 +159,22 @@ class AnalysisService:
             domain_scores['behavioral_activation'] = behavioral_analysis['score']
             detailed_analysis['behavioral'] = behavioral_analysis
             
+            # Adjust scores based on negative patterns detected
+            adjusted_scores = self._adjust_scores_for_negative_patterns(domain_scores, negative_patterns)
+            
             # Generate overall insights and recommendations
-            overall_insights = self._generate_overall_insights(transcript, detailed_analysis)
+            overall_insights = self._generate_overall_insights(transcript, detailed_analysis, negative_patterns)
             
             return {
-                'domain_scores': domain_scores,
+                'domain_scores': adjusted_scores,
                 'detailed_analysis': detailed_analysis,
+                'negative_patterns': negative_patterns,
                 'key_insights': overall_insights['insights'],
                 'recommendations': overall_insights['recommendations'],
                 'session_themes': overall_insights['themes'],
                 'progress_indicators': overall_insights['progress_indicators'],
+                'therapy_effectiveness': self._assess_therapy_effectiveness(adjusted_scores, negative_patterns),
+                'warning_signs': self._generate_warning_signs(negative_patterns),
                 'analysis_timestamp': datetime.now().isoformat()
             }
             
@@ -137,6 +228,124 @@ class AnalysisService:
         """
         
         return self._analyze_with_providers(prompt, "Carl Rogers' person-centered therapy approach")
+    
+    def _adjust_scores_for_negative_patterns(self, domain_scores, negative_patterns):
+        """Adjust domain scores based on detected negative patterns"""
+        adjusted_scores = domain_scores.copy()
+        
+        # Define how negative patterns affect different domains
+        pattern_impact = {
+            'therapeutic_alliance': {
+                'emotional_safety': -3.0,
+                'communication_changes': -2.0,
+                'strengths_wellbeing': -1.5
+            },
+            'emotional_deterioration': {
+                'emotional_safety': -2.5,
+                'strengths_wellbeing': -3.0,
+                'cognitive_restructuring': -2.0,
+                'behavioral_activation': -1.5
+            },
+            'resistance_patterns': {
+                'cognitive_restructuring': -2.5,
+                'behavioral_activation': -3.0,
+                'narrative_coherence': -2.0
+            },
+            'therapeutic_rupture': {
+                'emotional_safety': -3.5,
+                'communication_changes': -2.5,
+                'unconscious_patterns': -2.0
+            },
+            'stagnation_signs': {
+                'behavioral_activation': -2.0,
+                'cognitive_restructuring': -1.5,
+                'narrative_coherence': -2.5,
+                'strengths_wellbeing': -1.0
+            }
+        }
+        
+        # Apply negative adjustments based on severity
+        for pattern_type, pattern_data in negative_patterns.items():
+            severity = pattern_data['severity']
+            
+            if pattern_type in pattern_impact:
+                for domain, base_penalty in pattern_impact[pattern_type].items():
+                    if domain in adjusted_scores:
+                        # Apply penalty based on severity (0-1) and base penalty
+                        penalty = base_penalty * severity
+                        adjusted_scores[domain] = max(1.0, adjusted_scores[domain] + penalty)
+        
+        return adjusted_scores
+    
+    def _assess_therapy_effectiveness(self, scores, negative_patterns):
+        """Assess overall therapy effectiveness"""
+        avg_score = sum(scores.values()) / len(scores)
+        negative_severity = sum(p['severity'] for p in negative_patterns.values()) / len(negative_patterns) if negative_patterns else 0
+        
+        if avg_score <= 3.0 or negative_severity > 0.4:
+            return {
+                'status': 'concerning',
+                'message': 'Therapy may not be working effectively. Consider discussing concerns with therapist.',
+                'confidence': 0.8
+            }
+        elif avg_score <= 5.0 or negative_severity > 0.2:
+            return {
+                'status': 'mixed',
+                'message': 'Therapy showing mixed results. Some areas need attention.',
+                'confidence': 0.6
+            }
+        else:
+            return {
+                'status': 'positive',
+                'message': 'Therapy appears to be working well overall.',
+                'confidence': 0.7
+            }
+    
+    def _generate_warning_signs(self, negative_patterns):
+        """Generate warning signs based on negative patterns"""
+        warning_signs = []
+        
+        if 'therapeutic_alliance' in negative_patterns:
+            warning_signs.append({
+                'category': 'Relationship Issues',
+                'description': 'Client may not feel understood or supported by therapist',
+                'severity': 'high' if negative_patterns['therapeutic_alliance']['severity'] > 0.3 else 'medium',
+                'indicators': negative_patterns['therapeutic_alliance']['indicators']
+            })
+        
+        if 'emotional_deterioration' in negative_patterns:
+            warning_signs.append({
+                'category': 'Emotional Decline',
+                'description': 'Client reports worsening emotional state',
+                'severity': 'high',
+                'indicators': negative_patterns['emotional_deterioration']['indicators']
+            })
+        
+        if 'resistance_patterns' in negative_patterns:
+            warning_signs.append({
+                'category': 'Treatment Resistance',
+                'description': 'Client showing resistance to therapeutic interventions',
+                'severity': 'medium',
+                'indicators': negative_patterns['resistance_patterns']['indicators']
+            })
+        
+        if 'therapeutic_rupture' in negative_patterns:
+            warning_signs.append({
+                'category': 'Therapeutic Rupture',
+                'description': 'Relationship between client and therapist may be damaged',
+                'severity': 'high',
+                'indicators': negative_patterns['therapeutic_rupture']['indicators']
+            })
+        
+        if 'stagnation_signs' in negative_patterns:
+            warning_signs.append({
+                'category': 'Lack of Progress',
+                'description': 'Client not experiencing meaningful change or improvement',
+                'severity': 'medium',
+                'indicators': negative_patterns['stagnation_signs']['indicators']
+            })
+        
+        return warning_signs
     
     def _analyze_with_providers(self, prompt, system_context):
         """Try different AI providers for analysis"""
@@ -571,19 +780,35 @@ class AnalysisService:
         
         return self._analyze_with_providers(prompt, "behavioral activation and action-oriented therapy")
     
-    def _generate_overall_insights(self, transcript, detailed_analysis):
+    def _generate_overall_insights(self, transcript, detailed_analysis, negative_patterns=None):
         """Generate overall insights and recommendations"""
+        negative_context = ""
+        if negative_patterns:
+            negative_context = f"""
+            
+            IMPORTANT - NEGATIVE PATTERNS DETECTED:
+            {json.dumps(negative_patterns, indent=2)}
+            
+            Pay special attention to these concerning patterns when forming insights and recommendations.
+            Consider whether therapy is working effectively or if changes are needed.
+            """
+        
         prompt = f"""
         Based on this comprehensive therapeutic analysis incorporating the expertise of Carl Rogers, Sigmund Freud, Albert Ellis, Melanie Klein, Virginia Satir, Martin Seligman, and Aaron Beck, provide overall insights and recommendations.
         
         Analysis Summary:
         {json.dumps(detailed_analysis, indent=2)}
+        {negative_context}
         
         Synthesize findings across all frameworks to provide:
-        1. Key insights about the client's therapeutic progress
-        2. Specific recommendations for future sessions
+        1. Key insights about the client's therapeutic progress (be honest about negative patterns)
+        2. Specific recommendations for future sessions (address concerning patterns)
         3. Main themes that emerged across different approaches
         4. Progress indicators to track over time
+        5. If negative patterns are present, provide specific guidance on addressing them
+        
+        CRITICAL: If negative patterns indicate therapy is not working well, include this in your insights.
+        Do not ignore warning signs or present overly positive assessments when concerning patterns exist.
         
         Respond in JSON format with:
         {{
@@ -598,9 +823,17 @@ class AnalysisService:
         
         # Provide fallback if analysis fails
         if not result or 'insights' not in result:
+            fallback_insights = ["Session analysis completed with multiple therapeutic perspectives"]
+            fallback_recommendations = ["Continue working on identified areas for growth"]
+            
+            # Add negative pattern warnings to fallback
+            if negative_patterns:
+                fallback_insights.append("Warning: Concerning patterns detected that may indicate therapy is not working effectively")
+                fallback_recommendations.append("Consider discussing therapy effectiveness and potential changes with your therapist")
+            
             return {
-                "insights": ["Session analysis completed with multiple therapeutic perspectives"],
-                "recommendations": ["Continue working on identified areas for growth"],
+                "insights": fallback_insights,
+                "recommendations": fallback_recommendations,
                 "themes": ["Therapeutic progress and self-exploration"],
                 "progress_indicators": ["Client engagement and insight development"]
             }

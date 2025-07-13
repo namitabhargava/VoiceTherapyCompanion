@@ -21,6 +21,7 @@ Preferred communication style: Simple, everyday language.
 Free alternatives preferred: User requested free alternatives to OpenAI for transcription and analysis.
 User-friendly analysis: User requested analysis results in more user-friendly terms instead of technical jargon.
 PDF upload support: User requested ability to upload PDF files for transcript analysis.
+Enhanced negative detection: User requested better detection of when therapy is not working well, especially negative outcomes.
 
 ## System Architecture
 
@@ -47,10 +48,11 @@ PDF upload support: User requested ability to upload PDF files for transcript an
 
 ### Core Services
 1. **TranscriptionService**: Handles audio-to-text conversion using OpenAI Whisper
-2. **AnalysisService**: Performs therapeutic analysis using multiple psychological frameworks
+2. **AnalysisService**: Performs therapeutic analysis using multiple psychological frameworks with enhanced negative pattern detection
 3. **VAPIService**: Manages voice interactions for asking questions about sessions
 4. **SessionManager**: Handles session persistence and retrieval
 5. **PDFService**: Generates downloadable progress reports
+6. **FileHandler**: Processes different file types including PDF text extraction
 
 ### Authentication Services
 - **AuthService**: Manages OAuth flows for video conferencing platforms

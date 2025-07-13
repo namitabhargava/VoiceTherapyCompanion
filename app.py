@@ -670,7 +670,40 @@ def display_analysis_results(analysis):
     </div>
     """, unsafe_allow_html=True)
     
-    # Overall summary first
+    # Check for therapy effectiveness assessment
+    therapy_effectiveness = analysis.get('therapy_effectiveness', {})
+    warning_signs = analysis.get('warning_signs', [])
+    
+    # Display therapy effectiveness warning if concerning
+    if therapy_effectiveness and therapy_effectiveness.get('status') == 'concerning':
+        st.markdown("""
+        <div style="background: #e74c3c20; border-left: 4px solid #e74c3c; padding: 1rem; margin: 1rem 0; border-radius: 5px;">
+            <h3 style="color: #e74c3c; margin: 0;">⚠️ Therapy Effectiveness Alert</h3>
+            <p style="margin: 0.5rem 0 0 0; font-weight: bold;">""" + therapy_effectiveness.get('message', '') + """</p>
+        </div>
+        """, unsafe_allow_html=True)
+    elif therapy_effectiveness and therapy_effectiveness.get('status') == 'mixed':
+        st.markdown("""
+        <div style="background: #f39c1220; border-left: 4px solid #f39c12; padding: 1rem; margin: 1rem 0; border-radius: 5px;">
+            <h3 style="color: #f39c12; margin: 0;">⚠️ Mixed Progress</h3>
+            <p style="margin: 0.5rem 0 0 0;">""" + therapy_effectiveness.get('message', '') + """</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Display warning signs if present
+    if warning_signs:
+        st.markdown("### 🚨 Areas of Concern")
+        for warning in warning_signs:
+            severity_color = '#e74c3c' if warning['severity'] == 'high' else '#f39c12'
+            st.markdown(f"""
+            <div style="background: {severity_color}15; border-left: 4px solid {severity_color}; padding: 1rem; margin: 0.5rem 0; border-radius: 5px;">
+                <h4 style="color: {severity_color}; margin: 0;">{warning['category']}</h4>
+                <p style="margin: 0.5rem 0 0 0;">{warning['description']}</p>
+                <small style="color: #636e72;">Indicators: {', '.join(warning['indicators'][:3])}</small>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    # Overall summary
     scores = analysis.get('domain_scores', {})
     if scores:
         avg_score = sum(scores.values()) / len(scores)
