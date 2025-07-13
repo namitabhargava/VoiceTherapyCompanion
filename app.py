@@ -353,7 +353,7 @@ def show_upload_interface(services):
     st.markdown("<br>", unsafe_allow_html=True)
     show_platform_integration(services)
     
-    # Demo section for free users
+    # Demo section for users without OAuth
     show_demo_section(services)
 
 def show_service_status():
@@ -383,8 +383,9 @@ def show_platform_integration(services):
     """Show platform integration options"""
     st.markdown("""
     <div style="text-align: center; margin: 3rem 0 2rem 0;">
-        <h3>Or connect directly to your video platform</h3>
+        <h3>Or connect directly to your video platform (Optional)</h3>
         <p style="color: #636e72;">Automatically detect and analyze new therapy sessions</p>
+        <p style="color: #f39c12; font-size: 0.9rem;">⚠️ OAuth credentials required for platform integration</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -422,20 +423,23 @@ def show_platform_integration(services):
                         st.error(f"Failed to connect to {platform['name']}")
 
 def show_demo_section(services):
-    """Show demo section for users without API keys"""
-    openai_key = os.getenv("OPENAI_API_KEY")
-    hf_key = os.getenv("HUGGINGFACE_API_KEY")
+    """Show demo section for users without OAuth"""
+    st.markdown("""
+    <div style="text-align: center; margin: 3rem 0 2rem 0; padding: 2rem; background: #f8f9fa; border-radius: 15px;">
+        <h3>🎯 Try Demo Analysis</h3>
+        <p style="color: #636e72;">Test the enhanced negative pattern detection with sample therapeutic content</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    if not openai_key and not hf_key:
-        st.markdown("""
-        <div style="text-align: center; margin: 3rem 0 2rem 0; padding: 2rem; background: #f8f9fa; border-radius: 15px;">
-            <h3>🎯 Try Demo Analysis</h3>
-            <p style="color: #636e72;">Test the local analysis with sample therapeutic content</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        if st.button("🚀 Run Demo Analysis", type="secondary"):
-            show_demo_analysis(services)
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("✅ Analyze Positive Session", type="secondary"):
+            show_demo_analysis(services, demo_type="positive")
+    
+    with col2:
+        if st.button("⚠️ Analyze Concerning Session", type="secondary"):
+            show_demo_analysis(services, demo_type="concerning")
 
 def show_analytics_page(services):
     """Show analytics page"""
@@ -503,11 +507,24 @@ def process_transcript_file(services, uploaded_file):
 def authenticate_platform(services, platform):
     """Authenticate with the selected platform"""
     try:
+        # Check if OAuth credentials are configured
         if platform == "Zoom":
+            if not all([os.getenv("ZOOM_CLIENT_ID"), os.getenv("ZOOM_CLIENT_SECRET")]):
+                st.error("Zoom OAuth credentials not configured. Please set up ZOOM_CLIENT_ID and ZOOM_CLIENT_SECRET in your environment variables.")
+                st.info("To set up Zoom OAuth:\n1. Go to https://marketplace.zoom.us/develop/create\n2. Create an OAuth app\n3. Add your credentials to the environment")
+                return False
             return services['auth'].authenticate_zoom()
         elif platform == "Google Meet":
+            if not all([os.getenv("GOOGLE_CLIENT_ID"), os.getenv("GOOGLE_CLIENT_SECRET")]):
+                st.error("Google OAuth credentials not configured. Please set up GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in your environment variables.")
+                st.info("To set up Google OAuth:\n1. Go to https://console.cloud.google.com/\n2. Create OAuth 2.0 credentials\n3. Enable Drive API\n4. Add your credentials to the environment")
+                return False
             return services['auth'].authenticate_google()
         elif platform == "Microsoft Teams":
+            if not all([os.getenv("TEAMS_CLIENT_ID"), os.getenv("TEAMS_CLIENT_SECRET")]):
+                st.error("Teams OAuth credentials not configured. Please set up TEAMS_CLIENT_ID and TEAMS_CLIENT_SECRET in your environment variables.")
+                st.info("To set up Teams OAuth:\n1. Go to https://portal.azure.com/\n2. Register an app in Azure AD\n3. Add Microsoft Graph API permissions\n4. Add your credentials to the environment")
+                return False
             return services['auth'].authenticate_teams()
         return False
     except Exception as e:
@@ -1133,35 +1150,54 @@ def show_reports(services):
             except Exception as e:
                 st.error(f"Report generation error: {str(e)}")
 
-def show_demo_analysis(services):
+def show_demo_analysis(services, demo_type="positive"):
     """Show demo analysis with sample therapeutic content"""
-    st.header("🎯 Demo: Local Analysis")
+    st.header("🎯 Demo: Enhanced Pattern Detection")
     
-    # Sample therapeutic session transcript
-    demo_transcript = """
-    Therapist: How are you feeling today?
+    if demo_type == "positive":
+        st.subheader("✅ Positive Session Example")
+        demo_transcript = """
+        Therapist: How are you feeling today?
+        
+        Client: I've been feeling better lately. I had a difficult week at work, but I'm starting to understand how to handle stress better. I've been practicing the breathing exercises we talked about.
+        
+        Therapist: That's great progress. What specifically helped you feel better?
+        
+        Client: I think recognizing my patterns helped. When I feel overwhelmed, I now take a step back instead of getting anxious. I also talked to my supervisor about my workload, which was scary but went well.
+        
+        Therapist: You mentioned feeling scared. Can you tell me more about that?
+        
+        Client: I was worried they'd think I wasn't capable. But actually, they were understanding and we worked out a better schedule. I feel more confident now.
+        
+        Therapist: It sounds like you're developing good self-awareness and communication skills. How do you feel about the progress you've made?
+        
+        Client: I'm proud of myself. A few months ago, I would have just suffered in silence. Now I'm learning to speak up and take care of myself better.
+        """
+        
+    else:  # concerning
+        st.subheader("⚠️ Concerning Session Example")
+        demo_transcript = """
+        Therapist: How have you been feeling since our last session?
+        
+        Client: Honestly, I don't think this is helping. I feel like I'm getting worse, not better. The anxiety is overwhelming and I can't cope anymore.
+        
+        Therapist: I understand this is difficult. Can you tell me more about what's not working?
+        
+        Client: Nothing works. I've tried everything you suggested but it's all pointless. I'm hopeless and I don't see the point in continuing. You don't really understand what I'm going through.
+        
+        Therapist: I hear that you're feeling frustrated with our work together.
+        
+        Client: Frustrated doesn't even begin to cover it. I'm angry that I'm wasting my time and money on this. I've been coming here for months with no progress. I'm stuck in the same patterns and I want to give up.
+        
+        Therapist: It sounds like you're experiencing some strong feelings about therapy right now.
+        
+        Client: I don't feel safe or understood here. This therapy isn't working and I'm thinking about not coming back. I feel more depressed than when I started.
+        """
     
-    Client: I've been feeling better lately. I had a difficult week at work, but I'm starting to understand how to handle stress better. I've been practicing the breathing exercises we talked about.
-    
-    Therapist: That's great progress. What specifically helped you feel better?
-    
-    Client: I think recognizing my patterns helped. When I feel overwhelmed, I now take a step back instead of getting anxious. I also talked to my supervisor about my workload, which was scary but went well.
-    
-    Therapist: You mentioned feeling scared. Can you tell me more about that?
-    
-    Client: I was worried they'd think I wasn't capable. But actually, they were understanding and we worked out a better schedule. I feel more confident now.
-    
-    Therapist: It sounds like you're developing good self-awareness and communication skills. How do you feel about the progress you've made?
-    
-    Client: I'm proud of myself. A few months ago, I would have just suffered in silence. Now I'm learning to speak up and take care of myself better.
-    """
-    
-    st.subheader("Sample Session Transcript")
     st.text_area("Demo Transcript", demo_transcript, height=200, disabled=True)
     
     if st.button("Analyze This Session"):
-        with st.spinner("Running local analysis..."):
-            # Simulate analysis
+        with st.spinner("Running enhanced pattern analysis..."):
             analysis_results = services['analysis'].analyze_session(demo_transcript)
             
             if analysis_results:
@@ -1176,10 +1212,68 @@ def show_settings(services):
     """Show settings and configuration"""
     st.header("⚙️ Settings")
     
-    # API Configuration
-    st.subheader("API Configuration")
+    # OAuth Configuration
+    st.subheader("Platform Integration (OAuth)")
     
-    with st.expander("Add API Keys (Optional)"):
+    with st.expander("Configure Platform Access"):
+        st.markdown("""
+        **Note:** Platform integration is optional. You can use all core features by uploading files directly.
+        
+        To connect to video platforms, you'll need to create OAuth applications:
+        """)
+        
+        # Zoom OAuth
+        zoom_client_id = os.getenv("ZOOM_CLIENT_ID")
+        zoom_client_secret = os.getenv("ZOOM_CLIENT_SECRET")
+        
+        st.markdown("**Zoom Configuration:**")
+        if zoom_client_id and zoom_client_secret:
+            st.success("✅ Zoom OAuth configured")
+        else:
+            st.warning("⚠️ Zoom OAuth not configured")
+            st.markdown("""
+            1. Go to https://marketplace.zoom.us/develop/create
+            2. Create an OAuth app
+            3. Set redirect URI to your app URL + /auth/zoom/callback
+            4. Add ZOOM_CLIENT_ID and ZOOM_CLIENT_SECRET to environment variables
+            """)
+        
+        # Google OAuth
+        google_client_id = os.getenv("GOOGLE_CLIENT_ID")
+        google_client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
+        
+        st.markdown("**Google Meet Configuration:**")
+        if google_client_id and google_client_secret:
+            st.success("✅ Google OAuth configured")
+        else:
+            st.warning("⚠️ Google OAuth not configured")
+            st.markdown("""
+            1. Go to https://console.cloud.google.com/
+            2. Create OAuth 2.0 credentials
+            3. Enable Drive API
+            4. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to environment variables
+            """)
+        
+        # Teams OAuth
+        teams_client_id = os.getenv("TEAMS_CLIENT_ID")
+        teams_client_secret = os.getenv("TEAMS_CLIENT_SECRET")
+        
+        st.markdown("**Microsoft Teams Configuration:**")
+        if teams_client_id and teams_client_secret:
+            st.success("✅ Teams OAuth configured")
+        else:
+            st.warning("⚠️ Teams OAuth not configured")
+            st.markdown("""
+            1. Go to https://portal.azure.com/
+            2. Register an app in Azure AD
+            3. Add Microsoft Graph API permissions
+            4. Add TEAMS_CLIENT_ID and TEAMS_CLIENT_SECRET to environment variables
+            """)
+    
+    # API Configuration
+    st.subheader("AI Analysis Configuration")
+    
+    with st.expander("Configure AI Analysis (Optional)"):
         st.markdown("""
         **Free Options Available:**
         - **Local Analysis**: Basic keyword-based analysis (no API key needed)
