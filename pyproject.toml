@@ -5,6 +5,7 @@ description = "Add your description here"
 requires-python = ">=3.11"
 dependencies = [
     "cryptography>=45.0.5",
+    "google-genai>=1.25.0",
     "matplotlib>=3.10.3",
     "openai>=1.95.1",
     "pandas>=2.3.1",
