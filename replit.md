@@ -8,6 +8,7 @@ This is a full-stack Python application that provides voice-based therapeutic as
 
 Preferred communication style: Simple, everyday language.
 Free alternatives preferred: User requested free alternatives to OpenAI for transcription and analysis.
+User-friendly analysis: User requested analysis results in more user-friendly terms instead of technical jargon.
 
 ## System Architecture
 

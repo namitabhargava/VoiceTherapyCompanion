@@ -612,62 +612,283 @@ def show_dashboard(services):
             st.text_area("Session Transcript", selected_session.transcript, height=200)
 
 def display_analysis_results(analysis):
-    """Display analysis results in a structured format"""
-    st.subheader("Therapeutic Analysis Results")
+    """Display analysis results in user-friendly terms"""
+    st.markdown("""
+    <div style="text-align: center; margin: 2rem 0;">
+        <h2 style="color: #667eea;">Your Therapy Session Analysis</h2>
+        <p style="color: #636e72;">Here's what we discovered about your therapeutic progress</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    # Domain scores
+    # Overall summary first
     scores = analysis.get('domain_scores', {})
+    if scores:
+        avg_score = sum(scores.values()) / len(scores)
+        overall_status = get_overall_status(avg_score)
+        
+        st.markdown(f"""
+        <div style="background: {overall_status['color']}20; border-left: 4px solid {overall_status['color']}; padding: 1rem; margin: 1rem 0; border-radius: 5px;">
+            <h3 style="color: {overall_status['color']}; margin: 0;">Overall Progress: {overall_status['label']}</h3>
+            <p style="margin: 0.5rem 0 0 0;">{overall_status['description']}</p>
+        </div>
+        """, unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
+    # User-friendly domain explanations
+    st.subheader("📊 Key Areas of Growth")
     
-    with col1:
-        st.metric("Emotional Safety", f"{scores.get('emotional_safety', 0)}/10")
-        st.metric("Unconscious Patterns", f"{scores.get('unconscious_patterns', 0)}/10")
-        st.metric("Cognitive Restructuring", f"{scores.get('cognitive_restructuring', 0)}/10")
-        st.metric("Communication Changes", f"{scores.get('communication_changes', 0)}/10")
+    domain_explanations = {
+        'emotional_safety': {
+            'title': 'Emotional Safety & Trust',
+            'description': 'How comfortable and secure you feel in the therapeutic relationship',
+            'icon': '🤝'
+        },
+        'unconscious_patterns': {
+            'title': 'Pattern Recognition',
+            'description': 'Understanding recurring themes and behaviors in your life',
+            'icon': '🔍'
+        },
+        'cognitive_restructuring': {
+            'title': 'Thought Patterns',
+            'description': 'How well you\'re identifying and changing unhelpful thinking',
+            'icon': '💭'
+        },
+        'communication_changes': {
+            'title': 'Communication Skills',
+            'description': 'Improvements in how you express yourself and relate to others',
+            'icon': '💬'
+        },
+        'strengths_wellbeing': {
+            'title': 'Personal Strengths',
+            'description': 'Recognition and development of your positive qualities',
+            'icon': '⭐'
+        },
+        'narrative_coherence': {
+            'title': 'Life Story',
+            'description': 'How well you understand and tell your personal story',
+            'icon': '📖'
+        },
+        'behavioral_activation': {
+            'title': 'Taking Action',
+            'description': 'Steps you\'re taking to apply insights in daily life',
+            'icon': '🎯'
+        }
+    }
     
-    with col2:
-        st.metric("Strengths & Well-being", f"{scores.get('strengths_wellbeing', 0)}/10")
-        st.metric("Narrative Coherence", f"{scores.get('narrative_coherence', 0)}/10")
-        st.metric("Behavioral Activation", f"{scores.get('behavioral_activation', 0)}/10")
+    # Create progress cards
+    cols = st.columns(2)
+    col_index = 0
     
-    # Radar chart
-    categories = list(scores.keys())
-    values = list(scores.values())
+    for domain, score in scores.items():
+        domain_info = domain_explanations.get(domain, {})
+        if not domain_info:
+            continue
+            
+        with cols[col_index % 2]:
+            progress_level = get_progress_level(score)
+            
+            st.markdown(f"""
+            <div style="background: white; border-radius: 10px; padding: 1.5rem; margin: 1rem 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <span style="font-size: 2rem;">{domain_info['icon']}</span>
+                    <div>
+                        <h4 style="margin: 0; color: #2d3436;">{domain_info['title']}</h4>
+                        <p style="margin: 0; color: #636e72; font-size: 0.9rem;">{domain_info['description']}</p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="flex: 1; background: #f1f3f4; border-radius: 10px; height: 8px;">
+                        <div style="width: {score*10}%; background: {progress_level['color']}; height: 100%; border-radius: 10px; transition: width 0.3s ease;"></div>
+                    </div>
+                    <span style="font-weight: 600; color: {progress_level['color']};">{score:.1f}/10</span>
+                </div>
+                <p style="margin: 0.5rem 0 0 0; color: {progress_level['color']}; font-size: 0.85rem;">{progress_level['message']}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        col_index += 1
+    
+    # Visual chart
+    st.subheader("📈 Visual Progress Overview")
+    
+    # Create a more user-friendly radar chart
+    categories = [domain_explanations[k]['title'] for k in scores.keys() if k in domain_explanations]
+    values = [scores[k] for k in scores.keys() if k in domain_explanations]
     
     fig = go.Figure()
     fig.add_trace(go.Scatterpolar(
         r=values,
         theta=categories,
         fill='toself',
-        name='Current Session'
+        name='Current Session',
+        fillcolor='rgba(102, 126, 234, 0.3)',
+        line=dict(color='rgba(102, 126, 234, 1)', width=2)
     ))
     
     fig.update_layout(
         polar=dict(
             radialaxis=dict(
                 visible=True,
-                range=[0, 10]
+                range=[0, 10],
+                tickvals=[0, 2, 4, 6, 8, 10],
+                ticktext=['0', '2', '4', '6', '8', '10']
             )),
-        showlegend=True,
-        title="Therapeutic Domain Scores"
+        showlegend=False,
+        title=dict(
+            text="Your Therapeutic Progress Map",
+            x=0.5,
+            font=dict(size=18, color='#2d3436')
+        ),
+        font=dict(color='#636e72'),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)'
     )
     
     st.plotly_chart(fig, use_container_width=True)
     
-    # Key insights
+    # Key insights in friendly language
     insights = analysis.get('key_insights', [])
     if insights:
-        st.subheader("Key Insights")
-        for insight in insights:
-            st.write(f"• {insight}")
+        st.subheader("💡 What This Means for You")
+        for i, insight in enumerate(insights, 1):
+            friendly_insight = make_insight_friendly(insight)
+            st.markdown(f"""
+            <div style="background: #f8f9fa; border-radius: 8px; padding: 1rem; margin: 0.5rem 0; border-left: 3px solid #667eea;">
+                <strong>Insight {i}:</strong> {friendly_insight}
+            </div>
+            """, unsafe_allow_html=True)
     
-    # Recommendations
+    # Recommendations in actionable terms
     recommendations = analysis.get('recommendations', [])
     if recommendations:
-        st.subheader("Recommendations")
-        for rec in recommendations:
-            st.write(f"• {rec}")
+        st.subheader("🚀 Next Steps to Consider")
+        for i, rec in enumerate(recommendations, 1):
+            friendly_rec = make_recommendation_friendly(rec)
+            st.markdown(f"""
+            <div style="background: #e8f5e8; border-radius: 8px; padding: 1rem; margin: 0.5rem 0; border-left: 3px solid #28a745;">
+                <strong>Action {i}:</strong> {friendly_rec}
+            </div>
+            """, unsafe_allow_html=True)
+    
+    # Progress summary
+    show_progress_summary(analysis)
+
+def get_overall_status(avg_score):
+    """Get overall status based on average score"""
+    if avg_score >= 8:
+        return {
+            'label': 'Excellent Progress',
+            'description': 'You\'re showing strong growth across multiple areas of therapy.',
+            'color': '#28a745'
+        }
+    elif avg_score >= 6:
+        return {
+            'label': 'Good Progress',
+            'description': 'You\'re making solid progress with room for continued growth.',
+            'color': '#17a2b8'
+        }
+    elif avg_score >= 4:
+        return {
+            'label': 'Steady Progress',
+            'description': 'You\'re building a foundation and working through important areas.',
+            'color': '#ffc107'
+        }
+    else:
+        return {
+            'label': 'Early Stages',
+            'description': 'You\'re beginning your therapeutic journey with areas to explore.',
+            'color': '#fd7e14'
+        }
+
+def get_progress_level(score):
+    """Get progress level description"""
+    if score >= 8:
+        return {
+            'message': 'Excellent - Strong growth in this area',
+            'color': '#28a745'
+        }
+    elif score >= 6:
+        return {
+            'message': 'Good - Solid progress being made',
+            'color': '#17a2b8'
+        }
+    elif score >= 4:
+        return {
+            'message': 'Developing - Building skills here',
+            'color': '#ffc107'
+        }
+    else:
+        return {
+            'message': 'Starting - Area to focus on',
+            'color': '#fd7e14'
+        }
+
+def make_insight_friendly(insight):
+    """Convert technical insight to user-friendly language"""
+    # Replace technical terms with simpler ones
+    friendly_terms = {
+        'therapeutic alliance': 'your relationship with your therapist',
+        'cognitive restructuring': 'changing unhelpful thought patterns',
+        'psychodynamic': 'understanding deeper patterns',
+        'behavioral activation': 'taking positive actions',
+        'narrative coherence': 'understanding your life story',
+        'transference': 'how past relationships affect current ones',
+        'defense mechanisms': 'ways you protect yourself emotionally',
+        'unconscious patterns': 'automatic behaviors you might not notice'
+    }
+    
+    friendly_insight = insight.lower()
+    for technical, friendly in friendly_terms.items():
+        friendly_insight = friendly_insight.replace(technical, friendly)
+    
+    return friendly_insight.capitalize()
+
+def make_recommendation_friendly(recommendation):
+    """Convert technical recommendation to actionable language"""
+    friendly_terms = {
+        'explore': 'talk about',
+        'enhance': 'improve',
+        'develop': 'work on',
+        'strengthen': 'build up',
+        'address': 'work on',
+        'implement': 'try',
+        'practice': 'work on',
+        'consider': 'think about'
+    }
+    
+    friendly_rec = recommendation.lower()
+    for technical, friendly in friendly_terms.items():
+        friendly_rec = friendly_rec.replace(technical, friendly)
+    
+    return friendly_rec.capitalize()
+
+def show_progress_summary(analysis):
+    """Show a simple progress summary"""
+    st.subheader("📋 Session Summary")
+    
+    themes = analysis.get('session_themes', [])
+    progress_indicators = analysis.get('progress_indicators', [])
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if themes:
+            st.markdown("**Main topics discussed:**")
+            for theme in themes[:3]:  # Show top 3
+                st.write(f"• {theme}")
+    
+    with col2:
+        if progress_indicators:
+            st.markdown("**Signs of progress:**")
+            for indicator in progress_indicators[:3]:  # Show top 3
+                st.write(f"• {indicator}")
+    
+    # Encouraging message
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 10px; text-align: center; margin: 2rem 0;">
+        <h4 style="margin: 0 0 0.5rem 0;">Remember</h4>
+        <p style="margin: 0;">Therapy is a journey, not a destination. Each session is a step forward in your personal growth.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 def show_voice_interface(services):
     """Show voice interaction interface"""
