@@ -16,6 +16,7 @@ from services.pdf_service import PDFService
 from services.session_manager import SessionManager
 from models.session_data import SessionData
 from utils.security import SecurityUtils
+from utils.file_handler import FileHandler
 from config.settings import Settings
 
 # Initialize services
@@ -326,6 +327,25 @@ def show_upload_interface(services):
         
         if uploaded_transcript:
             st.success(f"File uploaded: {uploaded_transcript.name}")
+            
+            # Show preview for PDF files
+            if uploaded_transcript.type == "application/pdf":
+                if st.button("👀 Preview PDF Content", key="preview_pdf"):
+                    file_handler = FileHandler()
+                    preview_text = file_handler.extract_text_from_file(uploaded_transcript)
+                    
+                    if preview_text:
+                        # Show first 1000 characters as preview
+                        preview_content = preview_text[:1000] + "..." if len(preview_text) > 1000 else preview_text
+                        st.text_area("PDF Content Preview", preview_content, height=200)
+                        
+                        # Show file statistics
+                        word_count = len(preview_text.split())
+                        char_count = len(preview_text)
+                        st.info(f"📄 Document contains approximately {word_count:,} words and {char_count:,} characters")
+                    else:
+                        st.warning("Could not extract text from PDF. Please ensure the PDF contains readable text.")
+            
             if st.button("🔍 Analyze Transcript", type="primary", key="analyze_transcript"):
                 process_transcript_file(services, uploaded_transcript)
     
@@ -429,17 +449,47 @@ def show_analytics_page(services):
 def process_transcript_file(services, uploaded_file):
     """Process uploaded transcript file"""
     try:
-        # Read transcript content
-        if uploaded_file.type == "text/plain":
-            transcript = str(uploaded_file.read(), "utf-8")
-        else:
-            st.error("Only .txt files are supported for transcripts currently")
+        file_handler = FileHandler()
+        
+        # Validate file type and size
+        if not file_handler.is_supported_text_file(uploaded_file):
+            st.error("Unsupported file type. Please use TXT or PDF files.")
             return
+            
+        if not file_handler.validate_file_size(uploaded_file, max_size_mb=50):
+            return
+        
+        # Extract text from file
+        st.info("Extracting text from file...")
+        transcript = file_handler.extract_text_from_file(uploaded_file)
+        
+        if not transcript:
+            st.error("Could not extract text from the file.")
+            return
+        
+        # Validate transcript content
+        if not transcript.strip():
+            st.error("The uploaded file appears to be empty or contains no readable text.")
+            return
+        
+        # Show file info
+        file_info = file_handler.get_file_info(uploaded_file)
+        st.info(f"Processing {file_info['name']} ({file_info['size_mb']} MB)")
         
         with st.spinner("Analyzing transcript..."):
             analysis_results = services['analysis'].analyze_session(transcript)
             
             if analysis_results:
+                # Store the session data
+                session_data = SessionData(
+                    file_path=uploaded_file.name,
+                    transcript=transcript,
+                    analysis=analysis_results,
+                    timestamp=datetime.now()
+                )
+                
+                session_id = services['session_manager'].save_session(session_data)
+                
                 st.session_state.analysis_results = analysis_results
                 st.session_state.current_page = 'analytics'
                 st.success("Analysis complete! Redirecting to analytics...")

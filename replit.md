@@ -20,13 +20,15 @@ The analysis system incorporates the combined expertise of:
 Preferred communication style: Simple, everyday language.
 Free alternatives preferred: User requested free alternatives to OpenAI for transcription and analysis.
 User-friendly analysis: User requested analysis results in more user-friendly terms instead of technical jargon.
+PDF upload support: User requested ability to upload PDF files for transcript analysis.
 
 ## System Architecture
 
 ### Frontend Architecture
 - **Streamlit-based web interface**: Main application built with Streamlit for rapid prototyping and deployment
 - **Responsive design**: Uses Streamlit's native components with custom CSS styling
-- **File upload interface**: Supports multiple audio formats (MP3, WAV, MP4, M4A, OGG, FLAC, AAC)
+- **File upload interface**: Supports multiple audio formats (MP3, WAV, MP4, M4A, OGG, FLAC, AAC) and text formats (TXT, PDF)
+- **PDF processing**: Automatic text extraction from PDF documents with preview functionality
 - **Interactive dashboard**: Displays analysis results with charts and visualizations using Plotly
 
 ### Backend Architecture
