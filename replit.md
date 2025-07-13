@@ -2,7 +2,18 @@
 
 ## Overview
 
-This is a full-stack Python application that provides voice-based therapeutic assessment using VAPI (Voice AI). The application allows users to upload therapy session audio files, transcribes them, analyzes the content using multiple therapeutic frameworks, and provides interactive voice-based insights about therapy progress.
+This is a full-stack Python application that provides voice-based therapeutic assessment using VAPI (Voice AI). The application allows users to upload therapy session audio files, transcribes them, analyzes the content using multiple therapeutic frameworks based on the expertise of 7 renowned psychologists, and provides interactive voice-based insights about therapy progress.
+
+### Psychological Expertise Integration
+
+The analysis system incorporates the combined expertise of:
+- **Carl Rogers (1902-1987)**: Person-centered therapy focusing on empathy, unconditional positive regard, and genuineness
+- **Sigmund Freud (1856-1939)**: Psychoanalysis exploring unconscious patterns and defense mechanisms
+- **Albert Ellis (1913-2007)**: Rational Emotive Behavior Therapy (REBT) addressing irrational beliefs
+- **Melanie Klein (1882-1960)**: Child therapy and object relations theory
+- **Virginia Satir (1916-1988)**: Family systems therapy and communication patterns
+- **Martin Seligman (b. 1942)**: Positive psychology and PERMA-V model for well-being
+- **Aaron Beck (1921-2021)**: Cognitive therapy and cognitive behavioral therapy (CBT)
 
 ## User Preferences
 
