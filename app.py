@@ -292,37 +292,7 @@ def show_upload_interface(services):
             </div>
         </div>
         """, unsafe_allow_html=True)
-        
-        # Audio upload button - styled to match the design
-        st.markdown("""
-        <style>
-        .audio-upload-button {
-            background: #6b7280;
-            color: white;
-            padding: 0.8rem 2rem;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            text-align: center;
-            margin-top: 1rem;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-        
-        uploaded_audio = st.file_uploader(
-            "Choose Audio",
-            type=['mp3', 'wav', 'mp4', 'm4a', 'ogg', 'flac', 'aac'],
-            key="audio_upload",
-            label_visibility="collapsed"
-        )
-        
-        if uploaded_audio:
-            st.success(f"File uploaded: {uploaded_audio.name}")
-            if st.button("🔍 Analyze Audio", type="primary", key="analyze_audio"):
-                process_uploaded_file(services, uploaded_audio)
+
     
     with col2:
         st.markdown("""
@@ -340,37 +310,7 @@ def show_upload_interface(services):
             </div>
         </div>
         """, unsafe_allow_html=True)
-        
-        uploaded_transcript = st.file_uploader(
-            "📄 **Drag and drop file here**\n\nLimit 200MB per file • TXT, DOC, DOCX, PDF",
-            type=['txt', 'doc', 'docx', 'pdf'],
-            key="transcript_upload",
-            help="You can drag and drop your file here or click to browse"
-        )
-        
-        if uploaded_transcript:
-            st.success(f"File uploaded: {uploaded_transcript.name}")
-            
-            # Show preview for PDF files
-            if uploaded_transcript.type == "application/pdf":
-                if st.button("👀 Preview PDF Content", key="preview_pdf"):
-                    file_handler = FileHandler()
-                    preview_text = file_handler.extract_text_from_file(uploaded_transcript)
-                    
-                    if preview_text:
-                        # Show first 1000 characters as preview
-                        preview_content = preview_text[:1000] + "..." if len(preview_text) > 1000 else preview_text
-                        st.text_area("PDF Content Preview", preview_content, height=200)
-                        
-                        # Show file statistics
-                        word_count = len(preview_text.split())
-                        char_count = len(preview_text)
-                        st.info(f"📄 Document contains approximately {word_count:,} words and {char_count:,} characters")
-                    else:
-                        st.warning("Could not extract text from PDF. Please ensure the PDF contains readable text.")
-            
-            if st.button("🔍 Analyze Transcript", type="primary", key="analyze_transcript"):
-                process_transcript_file(services, uploaded_transcript)
+
     
     with col3:
         st.markdown("""
