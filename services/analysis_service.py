@@ -4,6 +4,7 @@ import streamlit as st
 from datetime import datetime
 from models.analysis_models import TherapeuticFramework, AnalysisResult
 import requests
+from services.multi_assessment_service import MultiAssessmentService
 
 class AnalysisService:
     def __init__(self):
@@ -22,6 +23,7 @@ class AnalysisService:
                 st.warning(f"OpenAI initialization failed: {str(e)}")
         
         self.frameworks = TherapeuticFramework()
+        self.multi_assessment = MultiAssessmentService()
         
         # Available analysis providers
         self.providers = {
@@ -162,6 +164,9 @@ class AnalysisService:
             # Adjust scores based on negative patterns detected
             adjusted_scores = self._adjust_scores_for_negative_patterns(domain_scores, negative_patterns)
             
+            # Conduct comprehensive multi-method, multi-source assessment
+            multi_assessment_results = self.multi_assessment.conduct_comprehensive_assessment(transcript)
+            
             # Generate overall insights and recommendations
             overall_insights = self._generate_overall_insights(transcript, detailed_analysis, negative_patterns)
             
@@ -174,6 +179,7 @@ class AnalysisService:
             return {
                 'domain_scores': adjusted_scores,
                 'detailed_analysis': detailed_analysis,
+                'multi_assessment_results': multi_assessment_results,
                 'negative_patterns': negative_patterns,
                 'key_insights': overall_insights['insights'],
                 'recommendations': overall_insights['recommendations'],

@@ -1311,6 +1311,65 @@ def display_analysis_results(analysis):
         </div>
         """, unsafe_allow_html=True)
     
+    # Display comprehensive multi-assessment results
+    multi_assessment = analysis.get('multi_assessment_results', {})
+    if multi_assessment:
+        st.markdown("### 🔍 Comprehensive Assessment Analysis")
+        st.markdown("*Using multiple evidence-based assessment methods and sources*")
+        
+        # Assessment methods used
+        methods_used = multi_assessment.get('methods_used', [])
+        if methods_used:
+            st.markdown("**Assessment Methods Applied:**")
+            method_names = {
+                'unstructured_interview': 'Clinical Interview Analysis',
+                'structured_interview': 'Systematic Coverage Assessment', 
+                'behavioral_observation': 'Behavioral Pattern Analysis',
+                'therapeutic_rating_scales': 'Standardized Rating Scales'
+            }
+            for method in methods_used:
+                if method in method_names:
+                    st.markdown(f"• {method_names[method]}")
+        
+        # Reliability assessment
+        reliability = multi_assessment.get('reliability_assessment', {})
+        if reliability:
+            rel_level = reliability.get('reliability_level', 'moderate')
+            rel_color = '#27ae60' if rel_level == 'high' else '#f39c12' if rel_level == 'moderate' else '#e74c3c'
+            st.markdown(f"""
+            <div style="background: {rel_color}15; border-left: 4px solid {rel_color}; padding: 1rem; margin: 0.5rem 0; border-radius: 5px;">
+                <h4 style="color: {rel_color}; margin: 0;">Assessment Reliability: {rel_level.title()}</h4>
+                <p style="margin: 0.5rem 0 0 0;">Overall reliability score: {reliability.get('overall_reliability', 0):.1f}/10</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Validity indicators
+        validity = multi_assessment.get('validity_indicators', {})
+        if validity:
+            val_level = validity.get('validity_level', 'moderate')
+            val_color = '#27ae60' if val_level == 'high' else '#f39c12' if val_level == 'moderate' else '#e74c3c'
+            st.markdown(f"""
+            <div style="background: {val_color}15; border-left: 4px solid {val_color}; padding: 1rem; margin: 0.5rem 0; border-radius: 5px;">
+                <h4 style="color: {val_color}; margin: 0;">Assessment Validity: {val_level.title()}</h4>
+                <p style="margin: 0.5rem 0 0 0;">Overall validity score: {validity.get('overall_validity', 0):.1f}/10</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Clinical recommendations from multi-assessment
+        clinical_recs = multi_assessment.get('clinical_recommendations', [])
+        if clinical_recs:
+            st.markdown("**Evidence-Based Clinical Recommendations:**")
+            for rec in clinical_recs[:5]:  # Show first 5 recommendations
+                st.markdown(f"• {rec}")
+        
+        # Assessment limitations
+        limitations = multi_assessment.get('assessment_limitations', [])
+        if limitations:
+            with st.expander("📝 Assessment Limitations & Considerations"):
+                st.markdown("**Important Assessment Limitations:**")
+                for limitation in limitations[:5]:  # Show first 5 limitations
+                    st.markdown(f"• {limitation}")
+    
     # User-friendly domain explanations
     st.subheader("📊 Key Areas of Growth")
     

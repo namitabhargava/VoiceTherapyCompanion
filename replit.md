@@ -33,9 +33,11 @@ Expert therapist evaluation: User requested more accurate therapist analysis bas
 - **File upload interface**: Supports multiple audio formats (MP3, WAV, MP4, M4A, OGG, FLAC, AAC) and text formats (TXT, PDF)
 - **PDF processing**: Automatic text extraction from PDF documents with preview functionality
 - **Interactive dashboard**: Displays analysis results with charts and visualizations using Plotly
+- **Multi-assessment display**: Shows comprehensive assessment results with reliability and validity indicators
 
 ### Backend Architecture
 - **Service-oriented architecture**: Modular design with separate services for different functionalities
+- **Multi-assessment framework**: Implements evidence-based assessment using multiple methods and sources
 - **OpenAI integration**: Uses GPT-4 for analysis and Whisper for transcription
 - **VAPI integration**: Voice AI service for interactive conversations about therapy sessions
 - **OAuth integration**: Supports Zoom, Google Meet, and Microsoft Teams for direct recording access
@@ -51,10 +53,11 @@ Expert therapist evaluation: User requested more accurate therapist analysis bas
 ### Core Services
 1. **TranscriptionService**: Handles audio-to-text conversion using OpenAI Whisper
 2. **AnalysisService**: Performs therapeutic analysis using multiple psychological frameworks with enhanced negative pattern detection and expert-level therapist evaluation
-3. **VAPIService**: Manages voice interactions for asking questions about sessions
-4. **SessionManager**: Handles session persistence and retrieval
-5. **PDFService**: Generates downloadable progress reports
-6. **FileHandler**: Processes different file types including PDF text extraction
+3. **MultiAssessmentService**: Implements evidence-based assessment using multiple methods and sources (unstructured interviews, structured interviews, behavioral observations, rating scales)
+4. **VAPIService**: Manages voice interactions for asking questions about sessions
+5. **SessionManager**: Handles session persistence and retrieval
+6. **PDFService**: Generates downloadable progress reports
+7. **FileHandler**: Processes different file types including PDF text extraction
 
 ### Expert Therapist Evaluation System
 The system now includes comprehensive therapist assessment based on principles from 15+ leading therapeutic experts including:
@@ -64,6 +67,14 @@ The system now includes comprehensive therapist assessment based on principles f
 - **Client Progress Monitoring**: Detects meaningful cognitive, emotional, and behavioral shifts
 - **Therapist Fit Scoring**: Rates alignment with client needs and relational connection (1-10 scale)
 - **Professional Recommendations**: Provides actionable guidance for clients about continuing or changing therapy
+
+### Multi-Assessment Methodology
+Following evidence-based practices from counseling assessment literature (Leppma & Jones), the system implements:
+- **Multiple Assessment Methods**: Unstructured interviews, structured interviews, behavioral observations, therapeutic rating scales
+- **Convergent Validity**: Cross-validation of findings across different assessment approaches
+- **Reliability & Validity Indicators**: Systematic evaluation of assessment quality and trustworthiness
+- **Clinical Recommendations**: Evidence-based guidance derived from comprehensive assessment
+- **Assessment Limitations**: Transparent identification of methodological constraints and biases
 
 ### Authentication Services
 - **AuthService**: Manages OAuth flows for video conferencing platforms
