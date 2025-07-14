@@ -359,19 +359,8 @@ def show_upload_interface(services):
                 <div style="background: #059669; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 0.5rem;">📹 Google Meet</div>
                 <div style="background: #7c3aed; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem;">📹 Teams</div>
             </div>
+        </div>
         """, unsafe_allow_html=True)
-        
-        # Platform integration buttons
-        if st.button("🔗 Connect Zoom", key="connect_zoom"):
-            st.info("Zoom integration coming soon...")
-        
-        if st.button("🔗 Connect Google Meet", key="connect_meet"):
-            st.info("Google Meet integration coming soon...")
-        
-        if st.button("🔗 Connect Teams", key="connect_teams"):
-            st.info("Teams integration coming soon...")
-            
-        st.markdown("</div>", unsafe_allow_html=True)
     
     # Security notice matching design
     st.markdown("""
