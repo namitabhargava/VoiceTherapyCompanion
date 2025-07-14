@@ -217,7 +217,7 @@ def create_header():
                     <span style="color: white; font-size: 1.5rem;">🧠</span>
                 </div>
                 <div>
-                    <h1 style="margin: 0; font-size: 18px; font-weight: 700; color: #1f2937;">MindAI</h1>
+                    <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #1f2937;">MindAI</h1>
                     <p style="margin: 0; font-size: 0.9rem; color: #6b7280;">Therapeutic Wellness Platform</p>
                 </div>
             </div>
@@ -263,7 +263,6 @@ def show_upload_interface(services):
     # Main title section
     st.markdown("""
     <div style="text-align: center; padding: 2rem 0; margin-bottom: 2rem;">
-        <h1 style="color: #1f2937; font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;">Upload Session Content</h1>
         <p style="color: #6b7280; font-size: 1.1rem; max-width: 600px; margin: 0 auto; line-height: 1.6;">
             Choose your path to therapeutic insight. Each method builds upon the foundation of evidence-based analysis.
         </p>
