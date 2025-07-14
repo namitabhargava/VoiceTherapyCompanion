@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import os
+import requests
 from datetime import datetime
 import pandas as pd
 import plotly.express as px
@@ -557,15 +558,47 @@ def show_upload_interface(services):
         </div>
         """, unsafe_allow_html=True)
         
-        # Platform buttons
-        if st.button("🔵 Zoom", key="zoom_btn", use_container_width=True):
-            authenticate_platform(services, 'Zoom')
+        # Platform buttons with authentication status
+        zoom_authenticated = st.session_state.get('zoom_authenticated', False)
+        google_authenticated = st.session_state.get('google_authenticated', False)
+        teams_authenticated = st.session_state.get('teams_authenticated', False)
         
-        if st.button("🟢 Google Meet", key="google_btn", use_container_width=True):
-            authenticate_platform(services, 'Google Meet')
+        # Zoom button
+        zoom_text = "🔵 Zoom (Connected)" if zoom_authenticated else "🔵 Zoom"
+        if st.button(zoom_text, key="zoom_btn", use_container_width=True):
+            if zoom_authenticated:
+                show_zoom_recordings(services)
+            else:
+                st.session_state.show_zoom_auth = True
+                st.rerun()
         
-        if st.button("🟣 Teams", key="teams_btn", use_container_width=True):
-            authenticate_platform(services, 'Microsoft Teams')
+        # Google Meet button
+        google_text = "🟢 Google Meet (Connected)" if google_authenticated else "🟢 Google Meet"
+        if st.button(google_text, key="google_btn", use_container_width=True):
+            if google_authenticated:
+                show_google_recordings(services)
+            else:
+                st.session_state.show_google_auth = True
+                st.rerun()
+        
+        # Teams button
+        teams_text = "🟣 Teams (Connected)" if teams_authenticated else "🟣 Teams"
+        if st.button(teams_text, key="teams_btn", use_container_width=True):
+            if teams_authenticated:
+                show_teams_recordings(services)
+            else:
+                st.session_state.show_teams_auth = True
+                st.rerun()
+    
+    # Handle platform authentication modals
+    if st.session_state.get('show_zoom_auth', False):
+        show_zoom_auth_modal(services)
+    
+    if st.session_state.get('show_google_auth', False):
+        show_google_auth_modal(services)
+    
+    if st.session_state.get('show_teams_auth', False):
+        show_teams_auth_modal(services)
     
 
 
@@ -727,32 +760,322 @@ def process_transcript_file(services, uploaded_file):
             except Exception as e:
                 st.warning(f"Could not remove temporary file: {str(e)}")
 
-def authenticate_platform(services, platform):
-    """Authenticate with the selected platform"""
+def show_zoom_auth_modal(services):
+    """Show Zoom authentication modal"""
+    st.markdown("""
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+        <div style="background: white; border-radius: 15px; padding: 2rem; width: 500px; max-width: 90vw; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+    """, unsafe_allow_html=True)
+    
+    st.markdown("### 🔵 Connect to Zoom")
+    st.markdown("Enter your Zoom OAuth credentials to connect to your Zoom account and access cloud recordings.")
+    
+    # Check if user already has credentials stored
+    if 'zoom_client_id' in st.session_state and 'zoom_client_secret' in st.session_state:
+        st.success("Zoom credentials already configured!")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Test Connection", key="test_zoom"):
+                if test_zoom_connection(services):
+                    st.success("✅ Connected to Zoom successfully!")
+                    st.session_state.zoom_authenticated = True
+                    st.session_state.show_zoom_auth = False
+                    st.rerun()
+                else:
+                    st.error("❌ Connection failed. Please check your credentials.")
+        
+        with col2:
+            if st.button("Update Credentials", key="update_zoom"):
+                del st.session_state.zoom_client_id
+                del st.session_state.zoom_client_secret
+                st.rerun()
+    else:
+        # Credentials input form
+        with st.form("zoom_auth_form"):
+            st.markdown("#### OAuth Application Setup")
+            st.markdown("1. Go to [Zoom Marketplace](https://marketplace.zoom.us/develop/create)")
+            st.markdown("2. Create an OAuth app")
+            st.markdown("3. Set redirect URI to: `https://localhost:5000/oauth/zoom`")
+            st.markdown("4. Enter your credentials below:")
+            
+            client_id = st.text_input("Client ID", placeholder="Your Zoom App Client ID")
+            client_secret = st.text_input("Client Secret", type="password", placeholder="Your Zoom App Client Secret")
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.form_submit_button("Connect to Zoom", type="primary"):
+                    if client_id and client_secret:
+                        st.session_state.zoom_client_id = client_id
+                        st.session_state.zoom_client_secret = client_secret
+                        
+                        # Update environment variables temporarily
+                        os.environ['ZOOM_CLIENT_ID'] = client_id
+                        os.environ['ZOOM_CLIENT_SECRET'] = client_secret
+                        
+                        # Test connection
+                        if test_zoom_connection(services):
+                            st.success("✅ Connected to Zoom successfully!")
+                            st.session_state.zoom_authenticated = True
+                            st.session_state.show_zoom_auth = False
+                            st.rerun()
+                        else:
+                            st.error("❌ Connection failed. Please check your credentials.")
+                    else:
+                        st.error("Please enter both Client ID and Client Secret")
+            
+            with col2:
+                if st.form_submit_button("Cancel"):
+                    st.session_state.show_zoom_auth = False
+                    st.rerun()
+    
+    # Close button
+    if st.button("✕", key="close_zoom_modal"):
+        st.session_state.show_zoom_auth = False
+        st.rerun()
+    
+    st.markdown("</div></div>", unsafe_allow_html=True)
+
+def show_google_auth_modal(services):
+    """Show Google Meet authentication modal"""
+    st.markdown("""
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+        <div style="background: white; border-radius: 15px; padding: 2rem; width: 500px; max-width: 90vw; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+    """, unsafe_allow_html=True)
+    
+    st.markdown("### 🟢 Connect to Google Meet")
+    st.markdown("Enter your Google OAuth credentials to connect to your Google account and access Meet recordings.")
+    
+    with st.form("google_auth_form"):
+        st.markdown("#### OAuth Application Setup")
+        st.markdown("1. Go to [Google Cloud Console](https://console.cloud.google.com/)")
+        st.markdown("2. Create OAuth 2.0 credentials")
+        st.markdown("3. Enable Drive API")
+        st.markdown("4. Enter your credentials below:")
+        
+        client_id = st.text_input("Client ID", placeholder="Your Google OAuth Client ID")
+        client_secret = st.text_input("Client Secret", type="password", placeholder="Your Google OAuth Client Secret")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.form_submit_button("Connect to Google", type="primary"):
+                if client_id and client_secret:
+                    st.session_state.google_client_id = client_id
+                    st.session_state.google_client_secret = client_secret
+                    os.environ['GOOGLE_CLIENT_ID'] = client_id
+                    os.environ['GOOGLE_CLIENT_SECRET'] = client_secret
+                    st.success("✅ Google credentials saved!")
+                    st.session_state.google_authenticated = True
+                    st.session_state.show_google_auth = False
+                    st.rerun()
+                else:
+                    st.error("Please enter both Client ID and Client Secret")
+        
+        with col2:
+            if st.form_submit_button("Cancel"):
+                st.session_state.show_google_auth = False
+                st.rerun()
+    
+    st.markdown("</div></div>", unsafe_allow_html=True)
+
+def show_teams_auth_modal(services):
+    """Show Microsoft Teams authentication modal"""
+    st.markdown("""
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+        <div style="background: white; border-radius: 15px; padding: 2rem; width: 500px; max-width: 90vw; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+    """, unsafe_allow_html=True)
+    
+    st.markdown("### 🟣 Connect to Microsoft Teams")
+    st.markdown("Enter your Microsoft Teams OAuth credentials to connect to your Teams account and access recordings.")
+    
+    with st.form("teams_auth_form"):
+        st.markdown("#### OAuth Application Setup")
+        st.markdown("1. Go to [Azure Portal](https://portal.azure.com/)")
+        st.markdown("2. Register an app in Azure AD")
+        st.markdown("3. Add Microsoft Graph API permissions")
+        st.markdown("4. Enter your credentials below:")
+        
+        client_id = st.text_input("Client ID", placeholder="Your Teams App Client ID")
+        client_secret = st.text_input("Client Secret", type="password", placeholder="Your Teams App Client Secret")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.form_submit_button("Connect to Teams", type="primary"):
+                if client_id and client_secret:
+                    st.session_state.teams_client_id = client_id
+                    st.session_state.teams_client_secret = client_secret
+                    os.environ['TEAMS_CLIENT_ID'] = client_id
+                    os.environ['TEAMS_CLIENT_SECRET'] = client_secret
+                    st.success("✅ Teams credentials saved!")
+                    st.session_state.teams_authenticated = True
+                    st.session_state.show_teams_auth = False
+                    st.rerun()
+                else:
+                    st.error("Please enter both Client ID and Client Secret")
+        
+        with col2:
+            if st.form_submit_button("Cancel"):
+                st.session_state.show_teams_auth = False
+                st.rerun()
+    
+    st.markdown("</div></div>", unsafe_allow_html=True)
+
+def test_zoom_connection(services):
+    """Test the Zoom connection"""
     try:
-        # Check if OAuth credentials are configured
-        if platform == "Zoom":
-            if not all([os.getenv("ZOOM_CLIENT_ID"), os.getenv("ZOOM_CLIENT_SECRET")]):
-                st.error("Zoom OAuth credentials not configured. Please set up ZOOM_CLIENT_ID and ZOOM_CLIENT_SECRET in your environment variables.")
-                st.info("To set up Zoom OAuth:\n1. Go to https://marketplace.zoom.us/develop/create\n2. Create an OAuth app\n3. Add your credentials to the environment")
-                return False
+        # Reinitialize auth service with new credentials
+        services['auth'] = AuthService()
+        
+        # Test basic API call
+        token = services['auth'].get_token('zoom')
+        if token:
+            # Test API call to verify credentials
+            headers = {
+                'Authorization': f'Bearer {token}',
+                'Content-Type': 'application/json'
+            }
+            
+            # Try to get user info
+            response = requests.get('https://api.zoom.us/v2/users/me', headers=headers)
+            return response.status_code == 200
+        else:
+            # Try OAuth flow
             return services['auth'].authenticate_zoom()
-        elif platform == "Google Meet":
-            if not all([os.getenv("GOOGLE_CLIENT_ID"), os.getenv("GOOGLE_CLIENT_SECRET")]):
-                st.error("Google OAuth credentials not configured. Please set up GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in your environment variables.")
-                st.info("To set up Google OAuth:\n1. Go to https://console.cloud.google.com/\n2. Create OAuth 2.0 credentials\n3. Enable Drive API\n4. Add your credentials to the environment")
-                return False
-            return services['auth'].authenticate_google()
-        elif platform == "Microsoft Teams":
-            if not all([os.getenv("TEAMS_CLIENT_ID"), os.getenv("TEAMS_CLIENT_SECRET")]):
-                st.error("Teams OAuth credentials not configured. Please set up TEAMS_CLIENT_ID and TEAMS_CLIENT_SECRET in your environment variables.")
-                st.info("To set up Teams OAuth:\n1. Go to https://portal.azure.com/\n2. Register an app in Azure AD\n3. Add Microsoft Graph API permissions\n4. Add your credentials to the environment")
-                return False
-            return services['auth'].authenticate_teams()
-        return False
     except Exception as e:
-        st.error(f"Authentication error: {str(e)}")
+        st.error(f"Connection test failed: {str(e)}")
         return False
+
+def show_zoom_recordings(services):
+    """Show available Zoom recordings"""
+    st.markdown("### 🔵 Zoom Cloud Recordings")
+    
+    with st.spinner("Fetching Zoom recordings..."):
+        try:
+            recordings = services['zoom'].get_recent_recordings(days_back=30)
+            
+            if recordings:
+                st.success(f"Found {len(recordings)} recordings from the last 30 days")
+                
+                for i, recording in enumerate(recordings):
+                    with st.expander(f"📹 {recording['topic']} - {recording['start_time']}"):
+                        col1, col2 = st.columns([3, 1])
+                        
+                        with col1:
+                            st.write(f"**Duration:** {recording['duration']} minutes")
+                            st.write(f"**File Size:** {recording['file_size']} MB")
+                            st.write(f"**Start Time:** {recording['start_time']}")
+                        
+                        with col2:
+                            if st.button("Analyze", key=f"analyze_zoom_{i}"):
+                                # Download and analyze the recording
+                                with st.spinner("Downloading and analyzing recording..."):
+                                    audio_file = services['zoom'].download_recording(recording)
+                                    if audio_file:
+                                        # Process the downloaded audio
+                                        transcript = services['transcription'].transcribe_audio(audio_file)
+                                        if transcript:
+                                            analysis = services['analysis'].analyze_session(transcript)
+                                            st.session_state.analysis_results = analysis
+                                            st.session_state.current_page = 'analytics'
+                                            st.success("Analysis complete!")
+                                            st.rerun()
+                                    else:
+                                        st.error("Failed to download recording")
+            else:
+                st.info("No recordings found in the last 30 days")
+                
+        except Exception as e:
+            st.error(f"Error fetching Zoom recordings: {str(e)}")
+            st.info("Please check your Zoom credentials and try again")
+
+def show_google_recordings(services):
+    """Show available Google Meet recordings"""
+    st.markdown("### 🟢 Google Meet Recordings")
+    
+    with st.spinner("Fetching Google Meet recordings..."):
+        try:
+            recordings = services['google_meet'].get_recent_recordings(days_back=30)
+            
+            if recordings:
+                st.success(f"Found {len(recordings)} recordings from the last 30 days")
+                
+                for i, recording in enumerate(recordings):
+                    with st.expander(f"📹 {recording['name']} - {recording['created_time']}"):
+                        col1, col2 = st.columns([3, 1])
+                        
+                        with col1:
+                            st.write(f"**File Size:** {recording['size']} MB")
+                            st.write(f"**Created:** {recording['created_time']}")
+                        
+                        with col2:
+                            if st.button("Analyze", key=f"analyze_google_{i}"):
+                                # Download and analyze the recording
+                                with st.spinner("Downloading and analyzing recording..."):
+                                    audio_file = services['google_meet'].download_recording(recording)
+                                    if audio_file:
+                                        # Process the downloaded audio
+                                        transcript = services['transcription'].transcribe_audio(audio_file)
+                                        if transcript:
+                                            analysis = services['analysis'].analyze_session(transcript)
+                                            st.session_state.analysis_results = analysis
+                                            st.session_state.current_page = 'analytics'
+                                            st.success("Analysis complete!")
+                                            st.rerun()
+                                    else:
+                                        st.error("Failed to download recording")
+            else:
+                st.info("No recordings found in the last 30 days")
+                
+        except Exception as e:
+            st.error(f"Error fetching Google Meet recordings: {str(e)}")
+            st.info("Please check your Google credentials and try again")
+
+def show_teams_recordings(services):
+    """Show available Teams recordings"""
+    st.markdown("### 🟣 Microsoft Teams Recordings")
+    
+    with st.spinner("Fetching Teams recordings..."):
+        try:
+            recordings = services['teams'].get_recent_recordings(days_back=30)
+            
+            if recordings:
+                st.success(f"Found {len(recordings)} recordings from the last 30 days")
+                
+                for i, recording in enumerate(recordings):
+                    with st.expander(f"📹 {recording['name']} - {recording['created_time']}"):
+                        col1, col2 = st.columns([3, 1])
+                        
+                        with col1:
+                            st.write(f"**Duration:** {recording['duration']} minutes")
+                            st.write(f"**File Size:** {recording['size']} MB")
+                            st.write(f"**Created:** {recording['created_time']}")
+                        
+                        with col2:
+                            if st.button("Analyze", key=f"analyze_teams_{i}"):
+                                # Download and analyze the recording
+                                with st.spinner("Downloading and analyzing recording..."):
+                                    audio_file = services['teams'].download_recording(recording)
+                                    if audio_file:
+                                        # Process the downloaded audio
+                                        transcript = services['transcription'].transcribe_audio(audio_file)
+                                        if transcript:
+                                            analysis = services['analysis'].analyze_session(transcript)
+                                            st.session_state.analysis_results = analysis
+                                            st.session_state.current_page = 'analytics'
+                                            st.success("Analysis complete!")
+                                            st.rerun()
+                                    else:
+                                        st.error("Failed to download recording")
+            else:
+                st.info("No recordings found in the last 30 days")
+                
+        except Exception as e:
+            st.error(f"Error fetching Teams recordings: {str(e)}")
+            st.info("Please check your Teams credentials and try again")
+
+def authenticate_platform(services, platform):
+    """Legacy function for backward compatibility"""
+    return True
 
 def detect_sessions(services, platform):
     """Detect new sessions from the platform"""
