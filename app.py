@@ -349,8 +349,7 @@ def show_upload_interface(services):
     </div>
     """, unsafe_allow_html=True)
     
-    # Demo section for users without OAuth
-    show_demo_section(services)
+
 
 def show_service_status():
     """Show service status in a clean way"""
