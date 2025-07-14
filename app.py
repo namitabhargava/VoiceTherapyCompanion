@@ -62,7 +62,7 @@ def main():
     if 'analysis_results' not in st.session_state:
         st.session_state.analysis_results = None
     if 'current_page' not in st.session_state:
-        st.session_state.current_page = 'upload'
+        st.session_state.current_page = 'dashboard'
     
     # Custom CSS for modern design
     st.markdown("""
