@@ -263,15 +263,6 @@ def create_navigation():
 
 def show_upload_interface(services):
     """Show the main upload interface matching the design"""
-    st.markdown("""
-    <div style="text-align: center; padding: 3rem 0; background: #f8f9fa; margin: -2rem -2rem 3rem -2rem;">
-        <h1 style="color: #374151; margin-bottom: 1rem; font-size: 2.5rem; font-weight: 600;">Upload Session Content</h1>
-        <p style="color: #6b7280; font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
-            Choose your path to therapeutic insight. Each method builds upon the foundation of evidence-based analysis.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-    
     # Main title section
     st.markdown("""
     <div style="text-align: center; padding: 2rem 0; margin-bottom: 2rem;">
