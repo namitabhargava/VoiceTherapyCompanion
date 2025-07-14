@@ -283,11 +283,21 @@ def show_upload_interface(services):
             <div style="color: #6b7280; margin-bottom: 2rem; font-size: 0.85rem;">
                 <span style="font-weight: 600;">MP3, WAV, M4A</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 500MB</span>
             </div>
-            <div style="background: #6b7280; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; display: inline-block; margin-top: 1rem;">
-                Browse files
-            </div>
         </div>
         """, unsafe_allow_html=True)
+        
+        # Functional audio file uploader
+        uploaded_audio = st.file_uploader(
+            "Browse files",
+            type=['mp3', 'wav', 'mp4', 'm4a', 'ogg', 'flac', 'aac'],
+            key="audio_upload",
+            help="Upload audio files for transcription and analysis"
+        )
+        
+        if uploaded_audio:
+            st.success(f"File uploaded: {uploaded_audio.name}")
+            if st.button("🔍 Analyze Audio", type="primary", key="analyze_audio"):
+                process_uploaded_file(services, uploaded_audio)
 
     
     with col2:
@@ -301,11 +311,44 @@ def show_upload_interface(services):
             <div style="color: #6b7280; margin-bottom: 2rem; font-size: 0.85rem;">
                 <span style="font-weight: 600;">TXT, DOC, PDF</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 50MB</span>
             </div>
-            <div style="background: #d97706; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; display: inline-block; margin-top: 1rem;">
-                Browse files
-            </div>
         </div>
         """, unsafe_allow_html=True)
+        
+        # Functional text file uploader
+        uploaded_transcript = st.file_uploader(
+            "Browse files",
+            type=['txt', 'doc', 'docx', 'pdf'],
+            key="transcript_upload",
+            help="Upload text documents for analysis"
+        )
+        
+        if uploaded_transcript:
+            st.success(f"File uploaded: {uploaded_transcript.name}")
+            
+            # Show preview for PDF files
+            if uploaded_transcript.type == "application/pdf":
+                if st.button("👀 Preview PDF Content", key="preview_pdf"):
+                    try:
+                        from services.file_handler import FileHandler
+                        file_handler = FileHandler()
+                        preview_text = file_handler.extract_text_from_file(uploaded_transcript)
+                        
+                        if preview_text:
+                            # Show first 1000 characters as preview
+                            preview_content = preview_text[:1000] + "..." if len(preview_text) > 1000 else preview_text
+                            st.text_area("PDF Content Preview", preview_content, height=200)
+                            
+                            # Show file statistics
+                            word_count = len(preview_text.split())
+                            char_count = len(preview_text)
+                            st.info(f"📄 Document contains approximately {word_count:,} words and {char_count:,} characters")
+                        else:
+                            st.warning("Could not extract text from PDF. Please ensure the PDF contains readable text.")
+                    except ImportError:
+                        st.warning("PDF processing not available. Please upload a TXT file instead.")
+            
+            if st.button("🔍 Analyze Transcript", type="primary", key="analyze_transcript"):
+                process_transcript_file(services, uploaded_transcript)
 
     
     with col3:
