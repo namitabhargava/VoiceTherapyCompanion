@@ -288,8 +288,31 @@ def main():
         margin: 0 0.5rem;
     }
     
-    /* Specific styling for text pillar file uploader */
-    div[data-testid="stFileUploader"] > div > div > div > div > button {
+    /* Audio Foundation file uploader button styling */
+    div[data-testid="stFileUploader"]:first-of-type > div > div > div > div > button {
+        background: #6b7280 !important;
+        color: white !important;
+        border: none !important;
+        padding: 1rem 2rem !important;
+        border-radius: 30px !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+        display: block !important;
+        box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3) !important;
+    }
+    
+    div[data-testid="stFileUploader"]:first-of-type > div > div > div > div > button:hover {
+        background: #4b5563 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 16px rgba(107, 114, 128, 0.4) !important;
+    }
+    
+    /* Text Pillar file uploader button styling */
+    div[data-testid="stFileUploader"]:nth-of-type(2) > div > div > div > div > button {
         background: #d97706 !important;
         color: white !important;
         border: none !important;
@@ -299,60 +322,48 @@ def main():
         font-weight: 600 !important;
         cursor: pointer !important;
         transition: all 0.2s ease !important;
-        width: auto !important;
-        max-width: 250px !important;
+        width: 100% !important;
         margin: 0 auto !important;
         display: block !important;
         box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3) !important;
     }
     
-    div[data-testid="stFileUploader"] > div > div > div > div > button:hover {
+    div[data-testid="stFileUploader"]:nth-of-type(2) > div > div > div > div > button:hover {
         background: #b45309 !important;
         transform: translateY(-2px) !important;
         box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4) !important;
     }
     
-    /* Target specifically the text pillar uploader */
-    .text-pillar-uploader div[data-testid="stFileUploader"] > div > div > div > div > button {
-        background: #d97706 !important;
-        color: white !important;
+    /* General file uploader styling */
+    div[data-testid="stFileUploader"] {
         border: none !important;
-        padding: 1rem 2rem !important;
-        border-radius: 30px !important;
-        font-size: 1rem !important;
-        font-weight: 600 !important;
-        cursor: pointer !important;
-        transition: all 0.2s ease !important;
-        width: auto !important;
-        max-width: 250px !important;
-        margin: 0 auto !important;
-        display: block !important;
-        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3) !important;
-        text-transform: none !important;
+        background: transparent !important;
+        padding: 0 !important;
     }
     
-    .text-pillar-uploader div[data-testid="stFileUploader"] > div > div > div > div > button:hover {
-        background: #b45309 !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4) !important;
+    div[data-testid="stFileUploader"] > div > div > div > div > section {
+        border: none !important;
+        background: transparent !important;
+        padding: 0 !important;
     }
     
-    /* Hide the default file uploader drag and drop text */
-    .text-pillar-uploader div[data-testid="stFileUploader"] > div > div > div > div > section > div > div > div > div > small {
+    /* Hide drag and drop text */
+    div[data-testid="stFileUploader"] > div > div > div > div > section > div > div > div > div > small {
         display: none !important;
     }
     
-    /* Style the file uploader container within the card */
-    .text-pillar-uploader div[data-testid="stFileUploader"] {
-        border: none !important;
-        background: transparent !important;
-        padding: 0 !important;
+    /* Platform buttons styling */
+    .stButton > button {
+        width: 100% !important;
+        border-radius: 30px !important;
+        font-weight: 600 !important;
+        transition: all 0.2s ease !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
     }
     
-    .text-pillar-uploader div[data-testid="stFileUploader"] > div > div > div > div > section {
-        border: none !important;
-        background: transparent !important;
-        padding: 0 !important;
+    .stButton > button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2) !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -426,9 +437,10 @@ def create_navigation():
 
 def show_upload_interface(services):
     """Show the main upload interface matching the design"""
-    # Main title section
+    # Main title and description
     st.markdown("""
-    <div style="text-align: center; padding: 2rem 0; margin-bottom: 2rem;">
+    <div style="text-align: center; padding: 2rem 0; margin-bottom: 3rem;">
+        <h1 style="color: #374151; font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;">Upload Session Content</h1>
         <p style="color: #6b7280; font-size: 1.1rem; max-width: 600px; margin: 0 auto; line-height: 1.6;">
             Choose your path to therapeutic insight. Each method builds upon the foundation of evidence-based analysis.
         </p>
@@ -436,83 +448,78 @@ def show_upload_interface(services):
     """, unsafe_allow_html=True)
     
     # Three-column layout matching the design
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns(3, gap="large")
     
     with col1:
-        # Create a container for the Audio Foundation with integrated upload
-        with st.container():
-            st.markdown("""
-            <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb; min-height: 400px;">
-                <div style="background: #6b7280; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
-                    <span style="font-size: 2rem;">🎤</span>
-                </div>
-                <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Audio Foundation</h3>
-                <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Transform spoken sessions into therapeutic insights</p>
-                <div style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.85rem;">
-                    <span style="font-weight: 600;">MP3, WAV, M4A</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 500MB</span>
-                </div>
+        # Audio Foundation Card
+        st.markdown("""
+        <div style="background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb; min-height: 400px;">
+            <div style="background: #6b7280; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2Z" fill="white"/>
+                    <path d="M19 10V12C19 15.9 15.9 19 12 19C8.1 19 5 15.9 5 12V10H7V12C7 14.8 9.2 17 12 17C14.8 17 17 14.8 17 12V10H19Z" fill="white"/>
+                    <path d="M12 19V22H12" stroke="white" stroke-width="2"/>
+                    <path d="M8 22H16" stroke="white" stroke-width="2"/>
+                </svg>
             </div>
-            """, unsafe_allow_html=True)
-            
-            # Direct file uploader with custom styling
-            uploaded_audio = st.file_uploader(
-                "🎵 Browse Files",
-                type=['mp3', 'wav', 'mp4', 'm4a', 'ogg', 'flac', 'aac'],
-                key="audio_upload",
-                help="Upload audio files for transcription and analysis"
-            )
+            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Audio Foundation</h3>
+            <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Transform spoken sessions into therapeutic insights</p>
+            <div style="color: #6b7280; margin-bottom: 2rem; font-size: 0.85rem;">
+                <span style="font-weight: 600;">MP3, WAV, M4A</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 500MB</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Audio file uploader styled as button
+        uploaded_audio = st.file_uploader(
+            "Choose Audio",
+            type=['mp3', 'wav', 'mp4', 'm4a', 'ogg', 'flac', 'aac'],
+            key="audio_upload",
+            help="Upload audio files for transcription and analysis",
+            label_visibility="collapsed"
+        )
         
         if uploaded_audio:
             st.success(f"File uploaded: {uploaded_audio.name}")
-            if st.button("🔍 Analyze Audio", type="primary", key="analyze_audio"):
+            if st.button("Analyze Audio", type="primary", key="analyze_audio", use_container_width=True):
                 process_uploaded_file(services, uploaded_audio)
 
-    
     with col2:
-        # Create a container for the Text Pillar with integrated upload
-        with st.container():
-            # Create the unified card design with integrated upload
-            st.markdown("""
-            <div class="text-pillar-card">
-                <div class="text-pillar-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="white"/>
-                        <path d="M14 2V8H20" fill="white"/>
-                        <path d="M16 13H8V15H16V13Z" fill="#d4b894"/>
-                        <path d="M16 17H8V19H16V17Z" fill="#d4b894"/>
-                        <path d="M10 9H8V11H10V9Z" fill="#d4b894"/>
-                    </svg>
-                </div>
-                <h3 class="text-pillar-title">Text Pillar</h3>
-                <p class="text-pillar-description">Direct analysis of written therapeutic content</p>
-                <div class="text-pillar-specs">
-                    <span class="spec-item">TXT, DOC, PDF</span>
-                    <span class="spec-separator">•</span>
-                    <span class="spec-item">Up to 50MB</span>
-                </div>
-            """, unsafe_allow_html=True)
-            
-            # Integrated file uploader within the card
-            st.markdown('<div class="text-pillar-uploader" style="margin-top: 1rem;">', unsafe_allow_html=True)
-            uploaded_transcript = st.file_uploader(
-                "Choose Document",
-                type=['txt', 'doc', 'docx', 'pdf'],
-                key="transcript_upload",
-                help="Upload text documents for analysis",
-                label_visibility="collapsed"
-            )
-            st.markdown('</div>', unsafe_allow_html=True)
-            
-            # Close the card div
-            st.markdown('</div>', unsafe_allow_html=True)
+        # Text Pillar Card
+        st.markdown("""
+        <div style="background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb; min-height: 400px;">
+            <div style="background: #d4b894; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="white"/>
+                    <path d="M14 2V8H20" fill="white"/>
+                    <path d="M16 13H8V15H16V13Z" fill="#d4b894"/>
+                    <path d="M16 17H8V19H16V17Z" fill="#d4b894"/>
+                    <path d="M10 9H8V11H10V9Z" fill="#d4b894"/>
+                </svg>
+            </div>
+            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Text Pillar</h3>
+            <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Direct analysis of written therapeutic content</p>
+            <div style="color: #6b7280; margin-bottom: 2rem; font-size: 0.85rem;">
+                <span style="font-weight: 600;">TXT, DOC, PDF</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 50MB</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
-        # Handle file processing outside the card but still in the column
+        # Text file uploader styled as button
+        uploaded_transcript = st.file_uploader(
+            "Choose Document",
+            type=['txt', 'doc', 'docx', 'pdf'],
+            key="transcript_upload",
+            help="Upload text documents for analysis",
+            label_visibility="collapsed"
+        )
+        
         if uploaded_transcript:
             st.success(f"File uploaded: {uploaded_transcript.name}")
             
             # Show preview for PDF files
             if uploaded_transcript.type == "application/pdf":
-                if st.button("👀 Preview PDF Content", key="preview_pdf"):
+                if st.button("Preview PDF Content", key="preview_pdf", use_container_width=True):
                     try:
                         from utils.file_handler import FileHandler
                         file_handler = FileHandler()
@@ -526,52 +533,39 @@ def show_upload_interface(services):
                             # Show file statistics
                             word_count = len(preview_text.split())
                             char_count = len(preview_text)
-                            st.info(f"📄 Document contains approximately {word_count:,} words and {char_count:,} characters")
+                            st.info(f"Document contains approximately {word_count:,} words and {char_count:,} characters")
                         else:
                             st.warning("Could not extract text from PDF. Please ensure the PDF contains readable text.")
                     except ImportError:
                         st.warning("PDF processing not available. Please upload a TXT file instead.")
             
-            if st.button("🔍 Analyze Transcript", type="primary", key="analyze_transcript"):
+            if st.button("Analyze Transcript", type="primary", key="analyze_transcript", use_container_width=True):
                 process_transcript_file(services, uploaded_transcript)
 
-    
     with col3:
+        # Live Balance Card
         st.markdown("""
-        <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb; min-height: 400px;">
-            <div style="background: #059669; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
-                <span style="font-size: 2rem;">📹</span>
+        <div style="background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb; min-height: 400px;">
+            <div style="background: #6b8e23; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17 10.5V7C17 4.24 14.76 2 12 2C9.24 2 7 4.24 7 7V10.5C5.84 10.5 4.5 11.84 4.5 13V20C4.5 21.16 5.84 22.5 7 22.5H17C18.16 22.5 19.5 21.16 19.5 20V13C19.5 11.84 18.16 10.5 17 10.5Z" fill="white"/>
+                    <circle cx="12" cy="16" r="1.5" fill="#6b8e23"/>
+                </svg>
             </div>
             <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Live Balance</h3>
-            <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Real-time therapeutic session analysis</p>
-            <div style="margin-bottom: 1.5rem;">
-                <div style="background: #3b82f6; color: white; padding: 0.8rem 1.5rem; border-radius: 25px; font-size: 0.9rem; margin-bottom: 0.8rem; font-weight: 500;">
-                    <span style="margin-right: 0.5rem;">🔵</span>Zoom
-                </div>
-                <div style="background: #059669; color: white; padding: 0.8rem 1.5rem; border-radius: 25px; font-size: 0.9rem; margin-bottom: 0.8rem; font-weight: 500;">
-                    <span style="margin-right: 0.5rem;">🟢</span>Google Meet
-                </div>
-                <div style="background: #7c3aed; color: white; padding: 0.8rem 1.5rem; border-radius: 25px; font-size: 0.9rem; font-weight: 500;">
-                    <span style="margin-right: 0.5rem;">🟣</span>Teams
-                </div>
-            </div>
+            <p style="color: #6b7280; margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.5;">Real-time therapeutic session analysis</p>
         </div>
         """, unsafe_allow_html=True)
-    
-    # Security notice matching design
-    st.markdown("""
-    <div style="background: #f8fafc; border-radius: 15px; padding: 2rem; margin: 3rem 0; border: 1px solid #e2e8f0; max-width: 800px; margin-left: auto; margin-right: auto;">
-        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-            <div style="background: #10b981; color: white; padding: 0.8rem; border-radius: 12px; margin-right: 1rem;">
-                <span style="font-size: 1.2rem;">🔒</span>
-            </div>
-            <h3 style="color: #374151; margin: 0; font-size: 1.3rem; font-weight: 600;">Secure & Balanced Protection</h3>
-        </div>
-        <p style="color: #6b7280; margin: 0; font-size: 1rem; line-height: 1.6;">
-            Your therapeutic content is protected with enterprise-grade encryption and HIPAA compliance. Like balanced stones, your data remains stable and secure, automatically removed after 30 days.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+        
+        # Platform buttons
+        if st.button("🔵 Zoom", key="zoom_btn", use_container_width=True):
+            authenticate_platform(services, 'Zoom')
+        
+        if st.button("🟢 Google Meet", key="google_btn", use_container_width=True):
+            authenticate_platform(services, 'Google Meet')
+        
+        if st.button("🟣 Teams", key="teams_btn", use_container_width=True):
+            authenticate_platform(services, 'Microsoft Teams')
     
 
 
