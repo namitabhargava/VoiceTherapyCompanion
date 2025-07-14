@@ -222,15 +222,7 @@ def create_header():
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 1rem;">
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <div style="background: #6b7280; color: white; padding: 0.5rem; border-radius: 50%; font-size: 0.9rem; font-weight: 600;">
-                        SC
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 0.9rem; font-weight: 600; color: #1f2937;">Dr. Sarah Chen</div>
-                        <div style="font-size: 0.8rem; color: #6b7280;">Clinical Psychologist</div>
-                    </div>
-                </div>
+                <!-- User profile section removed -->
             </div>
         </div>
     </div>
@@ -240,11 +232,6 @@ def create_navigation():
     """Create navigation tabs"""
     current_page = st.session_state.get('current_page', 'dashboard')
     
-    st.markdown("""
-    <div style="background: white; padding: 0 2rem; border-bottom: 1px solid #e0e0e0; margin-bottom: 2rem;">
-        <div style="display: flex; gap: 2rem;">
-    """, unsafe_allow_html=True)
-    
     # Create navigation items with active states
     nav_items = [
         ("dashboard", "Dashboard"),
@@ -253,22 +240,26 @@ def create_navigation():
         ("settings", "Settings")
     ]
     
-    cols = st.columns(len(nav_items) + 2)  # Extra columns for spacing
+    # Create navigation bar with proper styling
+    st.markdown("""
+    <div style="background: white; padding: 0 2rem; border-bottom: 1px solid #e0e0e0; margin-bottom: 2rem;">
+    """, unsafe_allow_html=True)
+    
+    cols = st.columns(len(nav_items))
     
     for i, (page_key, page_name) in enumerate(nav_items):
         with cols[i]:
-            active_style = "border-bottom: 2px solid #4f46e5; color: #4f46e5;" if current_page == page_key else "color: #6b7280;"
-            st.markdown(f"""
-            <div style="padding: 1rem 0; {active_style} font-weight: 500; text-align: center; cursor: pointer;">
-                {page_name}
-            </div>
-            """, unsafe_allow_html=True)
+            # Style active/inactive buttons
+            if current_page == page_key:
+                button_type = "primary"
+            else:
+                button_type = "secondary"
             
-            if st.button(page_name, key=f"nav_{page_key}"):
+            if st.button(page_name, key=f"nav_{page_key}", type=button_type):
                 st.session_state.current_page = page_key
                 st.rerun()
     
-    st.markdown("</div></div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
 def show_upload_interface(services):
     """Show the main upload interface matching the design"""
@@ -290,7 +281,7 @@ def show_upload_interface(services):
             <div style="background: #6b7280; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
                 <span style="font-size: 2rem;">🎤</span>
             </div>
-            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600;">Audio Foundation</h3>
+            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600;">Audio Files</h3>
             <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem;">Transform spoken sessions into therapeutic insights</p>
             <div style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.85rem;">
                 <strong>MP3, WAV, M4A &nbsp;&nbsp;•&nbsp;&nbsp; Up to 500MB</strong>
@@ -323,7 +314,7 @@ def show_upload_interface(services):
             <div style="background: #d97706; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
                 <span style="font-size: 2rem;">📄</span>
             </div>
-            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600;">Text Pillar</h3>
+            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600;">Text Script</h3>
             <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem;">Direct analysis of written therapeutic content</p>
             <div style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.85rem;">
                 <strong>TXT, DOC, PDF &nbsp;&nbsp;•&nbsp;&nbsp; Up to 50MB</strong>
@@ -375,7 +366,7 @@ def show_upload_interface(services):
             <div style="background: #059669; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
                 <span style="font-size: 2rem;">📹</span>
             </div>
-            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600;">Live Balance</h3>
+            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600;">Live Session</h3>
             <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem;">Real-time therapeutic session analysis</p>
             <div style="margin-bottom: 1.5rem;">
                 <div style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 0.5rem;">📹 Zoom</div>
