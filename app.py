@@ -338,7 +338,6 @@ def show_upload_interface(services):
                 <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Text Pillar</h3>
                 <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Direct analysis of written therapeutic content</p>
                 
-                <!-- Drag and drop area -->
                 <div style="border: 2px dashed #d1d5db; border-radius: 12px; padding: 2rem; margin: 1rem 0; background: #f9fafb; transition: all 0.2s ease;">
                     <div style="color: #6b7280; margin-bottom: 1rem;">
                         <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">📁</div>
