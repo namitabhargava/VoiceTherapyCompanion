@@ -289,13 +289,7 @@ def show_upload_interface(services):
         </div>
         """, unsafe_allow_html=True)
         
-        st.markdown("""
-        <div style="text-align: center; margin: 1rem;">
-            <button style="background: #6b7280; color: white; border: none; padding: 0.75rem 2rem; border-radius: 10px; font-weight: 600; cursor: pointer;">
-                Choose Audio
-            </button>
-        </div>
-        """, unsafe_allow_html=True)
+
         
         uploaded_audio = st.file_uploader(
             "Choose Audio File",
@@ -322,13 +316,7 @@ def show_upload_interface(services):
         </div>
         """, unsafe_allow_html=True)
         
-        st.markdown("""
-        <div style="text-align: center; margin: 1rem;">
-            <button style="background: #d97706; color: white; border: none; padding: 0.75rem 2rem; border-radius: 10px; font-weight: 600; cursor: pointer;">
-                Choose Document
-            </button>
-        </div>
-        """, unsafe_allow_html=True)
+
         
         uploaded_transcript = st.file_uploader(
             "Choose Transcript",
