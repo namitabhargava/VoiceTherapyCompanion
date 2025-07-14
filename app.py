@@ -286,10 +286,7 @@ def show_upload_interface(services):
             <div style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.85rem;">
                 <strong>MP3, WAV, M4A &nbsp;&nbsp;•&nbsp;&nbsp; Up to 500MB</strong>
             </div>
-        </div>
         """, unsafe_allow_html=True)
-        
-
         
         uploaded_audio = st.file_uploader(
             "Choose Audio File",
@@ -301,6 +298,8 @@ def show_upload_interface(services):
             st.success(f"File uploaded: {uploaded_audio.name}")
             if st.button("🔍 Analyze Audio", type="primary", key="analyze_audio"):
                 process_uploaded_file(services, uploaded_audio)
+                
+        st.markdown("</div>", unsafe_allow_html=True)
     
     with col2:
         st.markdown("""
@@ -313,10 +312,7 @@ def show_upload_interface(services):
             <div style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.85rem;">
                 <strong>TXT, DOC, PDF &nbsp;&nbsp;•&nbsp;&nbsp; Up to 50MB</strong>
             </div>
-        </div>
         """, unsafe_allow_html=True)
-        
-
         
         uploaded_transcript = st.file_uploader(
             "Choose Transcript",
@@ -347,6 +343,8 @@ def show_upload_interface(services):
             
             if st.button("🔍 Analyze Transcript", type="primary", key="analyze_transcript"):
                 process_transcript_file(services, uploaded_transcript)
+                
+        st.markdown("</div>", unsafe_allow_html=True)
     
     with col3:
         st.markdown("""
@@ -361,8 +359,19 @@ def show_upload_interface(services):
                 <div style="background: #059669; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 0.5rem;">📹 Google Meet</div>
                 <div style="background: #7c3aed; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem;">📹 Teams</div>
             </div>
-        </div>
         """, unsafe_allow_html=True)
+        
+        # Platform integration buttons
+        if st.button("🔗 Connect Zoom", key="connect_zoom"):
+            st.info("Zoom integration coming soon...")
+        
+        if st.button("🔗 Connect Google Meet", key="connect_meet"):
+            st.info("Google Meet integration coming soon...")
+        
+        if st.button("🔗 Connect Teams", key="connect_teams"):
+            st.info("Teams integration coming soon...")
+            
+        st.markdown("</div>", unsafe_allow_html=True)
     
     # Security notice matching design
     st.markdown("""
