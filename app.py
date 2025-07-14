@@ -213,6 +213,28 @@ def main():
         outline: none !important;
         box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
     }
+    
+    /* Style file uploader to match platform buttons */
+    .stFileUploader > div > div > div > div > button {
+        background: #3b82f6 !important;
+        color: white !important;
+        border: none !important;
+        padding: 0.8rem 1.5rem !important;
+        border-radius: 25px !important;
+        font-size: 0.9rem !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        width: 100% !important;
+        max-width: 200px !important;
+        margin: 0 auto !important;
+        display: block !important;
+    }
+    
+    .stFileUploader > div > div > div > div > button:hover {
+        background: #2563eb !important;
+        transform: translateY(-1px) !important;
+    }
     </style>
     """, unsafe_allow_html=True)
     
@@ -337,16 +359,23 @@ def show_upload_interface(services):
                 </div>
                 <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Text Pillar</h3>
                 <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Direct analysis of written therapeutic content</p>
-                
-                <div style="color: #6b7280; margin-bottom: 1rem; font-size: 0.85rem;">
-                    <span style="font-weight: 600;">TXT, DOC, DOCX, PDF</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 200MB</span>
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="background: #dc2626; color: white; padding: 0.8rem 1.5rem; border-radius: 25px; font-size: 0.9rem; margin-bottom: 0.8rem; font-weight: 500;">
+                        <span style="margin-right: 0.5rem;">📄</span>PDF Documents
+                    </div>
+                    <div style="background: #2563eb; color: white; padding: 0.8rem 1.5rem; border-radius: 25px; font-size: 0.9rem; margin-bottom: 0.8rem; font-weight: 500;">
+                        <span style="margin-right: 0.5rem;">📝</span>Text Files
+                    </div>
+                    <div style="background: #059669; color: white; padding: 0.8rem 1.5rem; border-radius: 25px; font-size: 0.9rem; font-weight: 500;">
+                        <span style="margin-right: 0.5rem;">📋</span>Word Documents
+                    </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
             
-            # Direct file uploader with custom styling
+            # Custom styled file uploader button
             uploaded_transcript = st.file_uploader(
-                "Browse files",
+                "📁 Browse Files",
                 type=['txt', 'doc', 'docx', 'pdf'],
                 key="transcript_upload",
                 help="Upload text documents for analysis"
