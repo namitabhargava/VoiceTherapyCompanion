@@ -333,7 +333,7 @@ def show_upload_interface(services):
             if uploaded_transcript.type == "application/pdf":
                 if st.button("👀 Preview PDF Content", key="preview_pdf"):
                     try:
-                        from services.file_handler import FileHandler
+                        from utils.file_handler import FileHandler
                         file_handler = FileHandler()
                         preview_text = file_handler.extract_text_from_file(uploaded_transcript)
                         
@@ -492,6 +492,7 @@ def process_transcript_file(services, uploaded_file):
     """Process uploaded transcript file"""
     temp_file_path = None
     try:
+        from utils.file_handler import FileHandler
         file_handler = FileHandler()
         
         # Validate file type and size
