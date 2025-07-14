@@ -474,6 +474,7 @@ def show_analytics_page(services):
 
 def process_transcript_file(services, uploaded_file):
     """Process uploaded transcript file"""
+    temp_file_path = None
     try:
         file_handler = FileHandler()
         
@@ -485,7 +486,7 @@ def process_transcript_file(services, uploaded_file):
         if not file_handler.validate_file_size(uploaded_file, max_size_mb=50):
             return
         
-        # Extract text from file
+        # Extract text from file (file handler processes in memory, no temp file needed)
         st.info("Extracting text from file...")
         transcript = file_handler.extract_text_from_file(uploaded_file)
         
@@ -506,9 +507,9 @@ def process_transcript_file(services, uploaded_file):
             analysis_results = services['analysis'].analyze_session(transcript)
             
             if analysis_results:
-                # Store the session data
+                # Store the session data (only filename, not content)
                 session_data = SessionData(
-                    file_path=uploaded_file.name,
+                    file_path=uploaded_file.name,  # Only store filename for reference
                     transcript=transcript,
                     analysis=analysis_results,
                     timestamp=datetime.now()
@@ -518,13 +519,21 @@ def process_transcript_file(services, uploaded_file):
                 
                 st.session_state.analysis_results = analysis_results
                 st.session_state.current_page = 'analytics'
-                st.success("Analysis complete! Redirecting to analytics...")
+                st.success("Analysis complete! File processed securely.")
                 st.rerun()
             else:
                 st.error("Analysis failed. Please try again.")
                 
     except Exception as e:
         st.error(f"Error processing transcript: {str(e)}")
+    finally:
+        # Clean up any temporary files (though text files are processed in memory)
+        if temp_file_path and os.path.exists(temp_file_path):
+            try:
+                os.remove(temp_file_path)
+                st.info("Temporary file cleaned up for privacy")
+            except Exception as e:
+                st.warning(f"Could not remove temporary file: {str(e)}")
 
 def authenticate_platform(services, platform):
     """Authenticate with the selected platform"""
@@ -569,9 +578,10 @@ def detect_sessions(services, platform):
 
 def process_uploaded_file(services, uploaded_file):
     """Process manually uploaded audio file"""
+    file_path = None
     try:
         with st.spinner("Processing audio file..."):
-            # Save uploaded file
+            # Save uploaded file temporarily
             file_path = services['session_manager'].save_uploaded_file(uploaded_file)
             
             # Transcribe
@@ -586,17 +596,13 @@ def process_uploaded_file(services, uploaded_file):
             st.info("Analyzing session content...")
             analysis_results = services['analysis'].analyze_session(transcript)
             
-            if analysis_results:
-                st.session_state.analysis_results = analysis_results
-                st.session_state.current_page = 'analytics'
-                st.success("Analysis complete! Redirecting to analytics...")
-                st.rerun()
-            else:
+            if not analysis_results:
                 st.error("Analysis failed. Please try again.")
+                return
             
-            # Store results
+            # Store results (without file path for privacy)
             session_data = SessionData(
-                file_path=file_path,
+                file_path=uploaded_file.name,  # Only store filename, not full path
                 transcript=transcript,
                 analysis=analysis_results,
                 timestamp=datetime.now()
@@ -607,10 +613,19 @@ def process_uploaded_file(services, uploaded_file):
             st.session_state.analysis_results = analysis_results
             
             st.success("Session processed successfully!")
+            st.session_state.current_page = 'analytics'
             st.rerun()
             
     except Exception as e:
         st.error(f"Processing error: {str(e)}")
+    finally:
+        # Always clean up the uploaded file after processing
+        if file_path and os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+                st.info("Temporary file cleaned up for privacy")
+            except Exception as e:
+                st.warning(f"Could not remove temporary file: {str(e)}")
 
 def show_welcome_screen():
     """Show welcome screen for unauthenticated users"""

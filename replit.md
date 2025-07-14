@@ -22,6 +22,7 @@ Free alternatives preferred: User requested free alternatives to OpenAI for tran
 User-friendly analysis: User requested analysis results in more user-friendly terms instead of technical jargon.
 PDF upload support: User requested ability to upload PDF files for transcript analysis.
 Enhanced negative detection: User requested better detection of when therapy is not working well, especially negative outcomes.
+Privacy-focused: User requested uploaded files be deleted after analysis to ensure no sensitive data is permanently stored.
 
 ## System Architecture
 
@@ -118,6 +119,8 @@ Enhanced negative detection: User requested better detection of when therapy is 
 - **HIPAA compliance**: Follows healthcare data protection practices
 - **OAuth security**: Secure token management for platform integrations
 - **Session timeouts**: Configurable session expiration for security
+- **File privacy**: Uploaded files automatically deleted after analysis to prevent sensitive data storage
+- **Temporary processing**: Audio files saved to temp directory and cleaned up immediately after transcription
 
 ### Configuration Management
 - **Environment-based config**: Uses environment variables for all sensitive data

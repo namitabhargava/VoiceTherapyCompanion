@@ -156,14 +156,14 @@ class SessionManager:
             return False
     
     def save_uploaded_file(self, uploaded_file) -> str:
-        """Save uploaded audio file"""
+        """Save uploaded audio file temporarily"""
         try:
-            # Generate unique filename
+            # Generate unique filename in temp directory
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"upload_{timestamp}_{uploaded_file.name}"
-            filepath = os.path.join("recordings", filename)
+            filename = f"temp_{timestamp}_{uploaded_file.name}"
+            filepath = os.path.join("temp", filename)
             
-            # Save file
+            # Save file temporarily
             with open(filepath, 'wb') as f:
                 f.write(uploaded_file.getbuffer())
             
@@ -193,6 +193,21 @@ class SessionManager:
             
         except Exception as e:
             st.error(f"Cleanup error: {str(e)}")
+    
+    def cleanup_temp_files(self):
+        """Clean up all temporary files"""
+        try:
+            temp_dir = "temp"
+            if os.path.exists(temp_dir):
+                for filename in os.listdir(temp_dir):
+                    filepath = os.path.join(temp_dir, filename)
+                    if os.path.isfile(filepath):
+                        os.remove(filepath)
+            
+            st.info("Temporary files cleaned up for privacy")
+            
+        except Exception as e:
+            st.warning(f"Could not clean up temporary files: {str(e)}")
     
     def export_sessions(self, session_ids: List[str] = None) -> str:
         """Export sessions to JSON file"""
