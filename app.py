@@ -287,6 +287,9 @@ def show_upload_interface(services):
             <div style="color: #6b7280; margin-bottom: 2rem; font-size: 0.85rem;">
                 <span style="font-weight: 600;">MP3, WAV, M4A</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 500MB</span>
             </div>
+            <div style="background: #6b7280; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; display: inline-block; margin-top: 1rem;">
+                Browse files
+            </div>
         </div>
         """, unsafe_allow_html=True)
         
@@ -331,6 +334,9 @@ def show_upload_interface(services):
             <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Direct analysis of written therapeutic content</p>
             <div style="color: #6b7280; margin-bottom: 2rem; font-size: 0.85rem;">
                 <span style="font-weight: 600;">TXT, DOC, PDF</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 50MB</span>
+            </div>
+            <div style="background: #d97706; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; display: inline-block; margin-top: 1rem;">
+                Browse files
             </div>
         </div>
         """, unsafe_allow_html=True)
