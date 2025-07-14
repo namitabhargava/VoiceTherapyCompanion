@@ -288,13 +288,26 @@ def show_upload_interface(services):
             </div>
             """, unsafe_allow_html=True)
             
-            # Functional audio file uploader positioned within the card area
-            uploaded_audio = st.file_uploader(
-                "Browse files",
-                type=['mp3', 'wav', 'mp4', 'm4a', 'ogg', 'flac', 'aac'],
-                key="audio_upload",
-                help="Upload audio files for transcription and analysis"
-            )
+            # Custom styled Browse Files button for audio
+            if st.button("🎵 Browse Files", key="browse_audio", type="primary", 
+                        help="Click to upload audio files for transcription and analysis"):
+                st.session_state.show_audio_uploader = True
+            
+            # Show file uploader when button is clicked
+            if st.session_state.get('show_audio_uploader', False):
+                uploaded_audio = st.file_uploader(
+                    "Select your audio file",
+                    type=['mp3', 'wav', 'mp4', 'm4a', 'ogg', 'flac', 'aac'],
+                    key="audio_upload",
+                    help="Upload audio files for transcription and analysis"
+                )
+                
+                if uploaded_audio is None:
+                    if st.button("Cancel", key="cancel_audio"):
+                        st.session_state.show_audio_uploader = False
+                        st.rerun()
+            else:
+                uploaded_audio = None
         
         if uploaded_audio:
             st.success(f"File uploaded: {uploaded_audio.name}")
@@ -318,13 +331,26 @@ def show_upload_interface(services):
             </div>
             """, unsafe_allow_html=True)
             
-            # Functional text file uploader positioned within the card area
-            uploaded_transcript = st.file_uploader(
-                "Browse files",
-                type=['txt', 'doc', 'docx', 'pdf'],
-                key="transcript_upload",
-                help="Upload text documents for analysis"
-            )
+            # Custom styled Browse Files button
+            if st.button("📁 Browse Files", key="browse_transcript", type="primary", 
+                        help="Click to upload text documents for analysis"):
+                st.session_state.show_transcript_uploader = True
+            
+            # Show file uploader when button is clicked
+            if st.session_state.get('show_transcript_uploader', False):
+                uploaded_transcript = st.file_uploader(
+                    "Select your file",
+                    type=['txt', 'doc', 'docx', 'pdf'],
+                    key="transcript_upload",
+                    help="Upload text documents for analysis"
+                )
+                
+                if uploaded_transcript is None:
+                    if st.button("Cancel", key="cancel_transcript"):
+                        st.session_state.show_transcript_uploader = False
+                        st.rerun()
+            else:
+                uploaded_transcript = None
         
         if uploaded_transcript:
             st.success(f"File uploaded: {uploaded_transcript.name}")
