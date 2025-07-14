@@ -188,6 +188,31 @@ def main():
         margin-left: auto;
         margin-right: auto;
     }
+    
+    /* Custom file uploader styling */
+    .stFileUploader > div > div > div > div {
+        text-align: center;
+    }
+    
+    .stFileUploader > div > div > div > div > button {
+        background-color: #3b82f6 !important;
+        color: white !important;
+        border: none !important;
+        padding: 0.5rem 1.5rem !important;
+        border-radius: 6px !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
+        transition: background-color 0.2s !important;
+    }
+    
+    .stFileUploader > div > div > div > div > button:hover {
+        background-color: #2563eb !important;
+    }
+    
+    .stFileUploader > div > div > div > div > button:focus {
+        outline: none !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
+    }
     </style>
     """, unsafe_allow_html=True)
     
@@ -288,26 +313,13 @@ def show_upload_interface(services):
             </div>
             """, unsafe_allow_html=True)
             
-            # Custom styled Browse Files button positioned right below the file format text
-            if st.button("🎵 Browse Files", key="browse_audio", type="primary", 
-                        help="Click to upload audio files for transcription and analysis"):
-                st.session_state.show_audio_uploader = True
-            
-            # Show file uploader when button is clicked
-            if st.session_state.get('show_audio_uploader', False):
-                uploaded_audio = st.file_uploader(
-                    "Select your audio file",
-                    type=['mp3', 'wav', 'mp4', 'm4a', 'ogg', 'flac', 'aac'],
-                    key="audio_upload",
-                    help="Upload audio files for transcription and analysis"
-                )
-                
-                if uploaded_audio is None:
-                    if st.button("Cancel", key="cancel_audio"):
-                        st.session_state.show_audio_uploader = False
-                        st.rerun()
-            else:
-                uploaded_audio = None
+            # Direct file uploader with custom styling
+            uploaded_audio = st.file_uploader(
+                "🎵 Browse Files",
+                type=['mp3', 'wav', 'mp4', 'm4a', 'ogg', 'flac', 'aac'],
+                key="audio_upload",
+                help="Upload audio files for transcription and analysis"
+            )
         
         if uploaded_audio:
             st.success(f"File uploaded: {uploaded_audio.name}")
@@ -331,26 +343,13 @@ def show_upload_interface(services):
             </div>
             """, unsafe_allow_html=True)
             
-            # Custom styled Browse Files button positioned right below the file format text
-            if st.button("📁 Browse Files", key="browse_transcript", type="primary", 
-                        help="Click to upload text documents for analysis"):
-                st.session_state.show_transcript_uploader = True
-            
-            # Show file uploader when button is clicked
-            if st.session_state.get('show_transcript_uploader', False):
-                uploaded_transcript = st.file_uploader(
-                    "Select your file",
-                    type=['txt', 'doc', 'docx', 'pdf'],
-                    key="transcript_upload",
-                    help="Upload text documents for analysis"
-                )
-                
-                if uploaded_transcript is None:
-                    if st.button("Cancel", key="cancel_transcript"):
-                        st.session_state.show_transcript_uploader = False
-                        st.rerun()
-            else:
-                uploaded_transcript = None
+            # Direct file uploader with custom styling
+            uploaded_transcript = st.file_uploader(
+                "📁 Browse Files",
+                type=['txt', 'doc', 'docx', 'pdf'],
+                key="transcript_upload",
+                help="Upload text documents for analysis"
+            )
         
         if uploaded_transcript:
             st.success(f"File uploaded: {uploaded_transcript.name}")
