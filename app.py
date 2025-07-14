@@ -336,6 +336,24 @@ def main():
         transform: translateY(-2px) !important;
         box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4) !important;
     }
+    
+    /* Hide the default file uploader drag and drop text */
+    .text-pillar-uploader div[data-testid="stFileUploader"] > div > div > div > div > section > div > div > div > div > small {
+        display: none !important;
+    }
+    
+    /* Style the file uploader container within the card */
+    .text-pillar-uploader div[data-testid="stFileUploader"] {
+        border: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+    }
+    
+    .text-pillar-uploader div[data-testid="stFileUploader"] > div > div > div > div > section {
+        border: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+    }
     </style>
     """, unsafe_allow_html=True)
     
@@ -453,7 +471,7 @@ def show_upload_interface(services):
     with col2:
         # Create a container for the Text Pillar with integrated upload
         with st.container():
-            # Create the card design exactly matching the image
+            # Create the unified card design with integrated upload
             st.markdown("""
             <div class="text-pillar-card">
                 <div class="text-pillar-icon">
@@ -472,11 +490,10 @@ def show_upload_interface(services):
                     <span class="spec-separator">•</span>
                     <span class="spec-item">Up to 50MB</span>
                 </div>
-            </div>
             """, unsafe_allow_html=True)
             
-            # Custom styled file uploader button wrapped in a container to target styling
-            st.markdown('<div class="text-pillar-uploader">', unsafe_allow_html=True)
+            # Integrated file uploader within the card
+            st.markdown('<div class="text-pillar-uploader" style="margin-top: 1rem;">', unsafe_allow_html=True)
             uploaded_transcript = st.file_uploader(
                 "Choose Document",
                 type=['txt', 'doc', 'docx', 'pdf'],
@@ -485,7 +502,11 @@ def show_upload_interface(services):
                 label_visibility="collapsed"
             )
             st.markdown('</div>', unsafe_allow_html=True)
+            
+            # Close the card div
+            st.markdown('</div>', unsafe_allow_html=True)
         
+        # Handle file processing outside the card but still in the column
         if uploaded_transcript:
             st.success(f"File uploaded: {uploaded_transcript.name}")
             
