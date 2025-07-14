@@ -211,18 +211,15 @@ def create_header():
     """Create the main header with branding"""
     st.markdown("""
     <div style="background: white; padding: 1rem 2rem; border-bottom: 1px solid #e0e0e0; margin-bottom: 0;">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; justify-content: center;">
             <div style="display: flex; align-items: center; gap: 1rem;">
                 <div style="background: #6b7280; padding: 0.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                     <span style="color: white; font-size: 1.5rem;">🧠</span>
                 </div>
                 <div>
-                    <h1 style="margin: 0; font-size: 1.5rem; font-weight: 700; color: #1f2937;">MindAI</h1>
+                    <h1 style="margin: 0; font-size: 18px; font-weight: 700; color: #1f2937;">MindAI</h1>
                     <p style="margin: 0; font-size: 0.9rem; color: #6b7280;">Therapeutic Wellness Platform</p>
                 </div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <!-- User profile section removed -->
             </div>
         </div>
     </div>
