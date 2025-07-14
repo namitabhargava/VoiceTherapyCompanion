@@ -198,100 +198,111 @@ def main():
     create_navigation()
     
     # Main content based on current page
-    if st.session_state.current_page == 'upload':
+    if st.session_state.current_page == 'dashboard':
         show_upload_interface(services)
-    elif st.session_state.current_page == 'dashboard':
-        show_dashboard(services)
     elif st.session_state.current_page == 'analytics':
         show_analytics_page(services)
-    elif st.session_state.current_page == 'reports':
-        show_reports(services)
+    elif st.session_state.current_page == 'progress':
+        show_progress_tracking(services)
     elif st.session_state.current_page == 'settings':
         show_settings(services)
 
 def create_header():
     """Create the main header with branding"""
     st.markdown("""
-    <div style="display: flex; align-items: center; padding: 1rem 0; border-bottom: 1px solid #e0e0e0; margin-bottom: 2rem;">
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                <span style="color: white; font-size: 1.5rem; font-weight: bold;">🧠</span>
+    <div style="background: white; padding: 1rem 2rem; border-bottom: 1px solid #e0e0e0; margin-bottom: 0;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="background: #6b7280; padding: 0.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <span style="color: white; font-size: 1.5rem;">🧠</span>
+                </div>
+                <div>
+                    <h1 style="margin: 0; font-size: 1.5rem; font-weight: 700; color: #1f2937;">MindAI</h1>
+                    <p style="margin: 0; font-size: 0.9rem; color: #6b7280;">Therapeutic Wellness Platform</p>
+                </div>
             </div>
-            <div>
-                <h1 style="margin: 0; color: #2d3436; font-size: 1.8rem; font-weight: 700;">MindAI</h1>
-                <p style="margin: 0; color: #636e72; font-size: 0.9rem;">Therapeutic Intelligence Platform</p>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="background: #6b7280; color: white; padding: 0.5rem; border-radius: 50%; font-size: 0.9rem; font-weight: 600;">
+                        SC
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.9rem; font-weight: 600; color: #1f2937;">Dr. Sarah Chen</div>
+                        <div style="font-size: 0.8rem; color: #6b7280;">Clinical Psychologist</div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div style="margin-left: auto; display: flex; gap: 1rem;">
-            <span style="background: #f8f9fa; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; color: #636e72;">Demo Environment</span>
-            <span style="background: #e3f2fd; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; color: #1565c0;">Multi-Modal Framework</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
 def create_navigation():
     """Create navigation tabs"""
-    col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
+    current_page = st.session_state.get('current_page', 'dashboard')
     
-    with col1:
-        if st.button("📁 Upload", key="nav_upload", help="Upload and analyze sessions"):
-            st.session_state.current_page = 'upload'
-            st.rerun()
+    st.markdown("""
+    <div style="background: white; padding: 0 2rem; border-bottom: 1px solid #e0e0e0; margin-bottom: 2rem;">
+        <div style="display: flex; gap: 2rem;">
+    """, unsafe_allow_html=True)
     
-    with col2:
-        if st.button("📊 Dashboard", key="nav_dashboard", help="View session overview"):
-            st.session_state.current_page = 'dashboard'
-            st.rerun()
+    # Create navigation items with active states
+    nav_items = [
+        ("dashboard", "Dashboard"),
+        ("analytics", "Analysis"), 
+        ("progress", "Insights"),
+        ("settings", "Settings")
+    ]
     
-    with col3:
-        if st.button("📈 Analytics", key="nav_analytics", help="Detailed analysis"):
-            st.session_state.current_page = 'analytics'
-            st.rerun()
+    cols = st.columns(len(nav_items) + 2)  # Extra columns for spacing
     
-    with col4:
-        if st.button("📄 Reports", key="nav_reports", help="Generate reports"):
-            st.session_state.current_page = 'reports'
-            st.rerun()
+    for i, (page_key, page_name) in enumerate(nav_items):
+        with cols[i]:
+            active_style = "border-bottom: 2px solid #4f46e5; color: #4f46e5;" if current_page == page_key else "color: #6b7280;"
+            st.markdown(f"""
+            <div style="padding: 1rem 0; {active_style} font-weight: 500; text-align: center; cursor: pointer;">
+                {page_name}
+            </div>
+            """, unsafe_allow_html=True)
+            
+            if st.button(page_name, key=f"nav_{page_key}"):
+                st.session_state.current_page = page_key
+                st.rerun()
     
-    with col5:
-        if st.button("⚙️ Settings", key="nav_settings", help="Configure settings"):
-            st.session_state.current_page = 'settings'
-            st.rerun()
+    st.markdown("</div></div>", unsafe_allow_html=True)
 
 def show_upload_interface(services):
     """Show the main upload interface matching the design"""
-    # Hero section
     st.markdown("""
-    <div class="hero-section">
-        <h1 class="hero-title">Analyze Your <span style="color: #667eea;">Therapy Sessions</span></h1>
-        <p class="hero-subtitle">Upload audio recordings or transcripts to receive comprehensive therapeutic analysis across 7 evidence-based domains with actionable insights for improved patient outcomes.</p>
+    <div style="text-align: center; padding: 3rem 0; background: #f8f9fa; margin: -2rem -2rem 3rem -2rem;">
+        <h1 style="color: #374151; margin-bottom: 1rem; font-size: 2.5rem; font-weight: 600;">Upload Session Content</h1>
+        <p style="color: #6b7280; font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+            Choose your path to therapeutic insight. Each method builds upon the foundation of evidence-based analysis.
+        </p>
     </div>
     """, unsafe_allow_html=True)
     
-    # Service status indicator
-    show_service_status()
-    
-    # Platform integration section
-    st.markdown("""
-    <div style="text-align: center; margin: 2rem 0;">
-        <h2>Choose your preferred method to begin comprehensive therapeutic analysis</h2>
-        <p style="color: #636e72; margin-bottom: 2rem;">💬 I'm here to help you analyze your therapeutic sessions</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Main upload options
-    col1, col2 = st.columns(2)
+    # Three-column layout matching the design
+    col1, col2, col3 = st.columns(3)
     
     with col1:
         st.markdown("""
-        <div class="upload-card">
-            <div class="upload-icon">🎤</div>
-            <h3>Audio Recording</h3>
-            <p>Upload your therapy session audio file for automatic transcription and analysis</p>
-            <div style="margin: 1rem 0;">
-                <span style="color: #28a745;">✓ MP3, WAV, M4A</span> &nbsp;&nbsp;
-                <span style="color: #28a745;">✓ Up to 500MB</span>
+        <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb;">
+            <div style="background: #6b7280; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
+                <span style="font-size: 2rem;">🎤</span>
             </div>
+            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600;">Audio Foundation</h3>
+            <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem;">Transform spoken sessions into therapeutic insights</p>
+            <div style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.85rem;">
+                <strong>MP3, WAV, M4A &nbsp;&nbsp;•&nbsp;&nbsp; Up to 500MB</strong>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+        <div style="text-align: center; margin: 1rem;">
+            <button style="background: #6b7280; color: white; border: none; padding: 0.75rem 2rem; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                Choose Audio
+            </button>
         </div>
         """, unsafe_allow_html=True)
         
@@ -308,14 +319,23 @@ def show_upload_interface(services):
     
     with col2:
         st.markdown("""
-        <div class="upload-card">
-            <div class="upload-icon">📝</div>
-            <h3>Text Transcript</h3>
-            <p>Upload an existing session transcript for immediate therapeutic analysis</p>
-            <div style="margin: 1rem 0;">
-                <span style="color: #28a745;">✓ TXT, DOC, PDF</span> &nbsp;&nbsp;
-                <span style="color: #28a745;">✓ Up to 50MB</span>
+        <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb;">
+            <div style="background: #d97706; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
+                <span style="font-size: 2rem;">📄</span>
             </div>
+            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600;">Text Pillar</h3>
+            <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem;">Direct analysis of written therapeutic content</p>
+            <div style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.85rem;">
+                <strong>TXT, DOC, PDF &nbsp;&nbsp;•&nbsp;&nbsp; Up to 50MB</strong>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+        <div style="text-align: center; margin: 1rem;">
+            <button style="background: #d97706; color: white; border: none; padding: 0.75rem 2rem; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                Choose Document
+            </button>
         </div>
         """, unsafe_allow_html=True)
         
@@ -349,9 +369,32 @@ def show_upload_interface(services):
             if st.button("🔍 Analyze Transcript", type="primary", key="analyze_transcript"):
                 process_transcript_file(services, uploaded_transcript)
     
-    # Platform integration section
-    st.markdown("<br>", unsafe_allow_html=True)
-    show_platform_integration(services)
+    with col3:
+        st.markdown("""
+        <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb;">
+            <div style="background: #059669; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
+                <span style="font-size: 2rem;">📹</span>
+            </div>
+            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600;">Live Balance</h3>
+            <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem;">Real-time therapeutic session analysis</p>
+            <div style="margin-bottom: 1.5rem;">
+                <div style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 0.5rem;">📹 Zoom</div>
+                <div style="background: #059669; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 0.5rem;">📹 Google Meet</div>
+                <div style="background: #7c3aed; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem;">📹 Teams</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Security notice matching design
+    st.markdown("""
+    <div style="background: #f0f9ff; border: 1px solid #e0f2fe; border-radius: 15px; padding: 2rem; margin: 2rem 0; display: flex; align-items: center; gap: 1rem;">
+        <div style="background: #0369a1; color: white; padding: 1rem; border-radius: 50%; font-size: 1.2rem;">🔒</div>
+        <div>
+            <h4 style="color: #1e40af; margin: 0 0 0.5rem 0; font-size: 1.1rem;">Secure & Balanced Protection</h4>
+            <p style="color: #1e40af; margin: 0; font-size: 0.95rem;">Your therapeutic content is protected with enterprise-grade encryption and HIPAA compliance. Like balanced stones, your data remains stable and secure, automatically removed after 30 days.</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Demo section for users without OAuth
     show_demo_section(services)
@@ -1165,58 +1208,142 @@ def show_voice_interface(services):
 
 def show_progress_tracking(services):
     """Show progress tracking over time"""
-    st.header("📈 Progress Tracking")
+    st.markdown("""
+    <div style="text-align: center; padding: 2rem 0; background: #f8f9fa; margin: -2rem -2rem 2rem -2rem;">
+        <h1 style="color: #374151; margin-bottom: 1rem; font-size: 2.5rem; font-weight: 600;">Therapeutic Insights</h1>
+        <p style="color: #6b7280; font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+            Discover patterns and progress in your therapeutic journey
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     sessions = services['session_manager'].get_all_sessions()
     
-    if len(sessions) < 2:
-        st.info("At least 2 sessions are needed for progress tracking.")
+    if len(sessions) == 0:
+        st.markdown("""
+        <div style="text-align: center; padding: 3rem; background: white; border-radius: 15px; margin: 2rem 0;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">📊</div>
+            <h3 style="color: #374151; margin-bottom: 1rem;">No Sessions Found</h3>
+            <p style="color: #6b7280; margin-bottom: 2rem;">Upload your first therapy session to begin tracking insights and progress.</p>
+            <button style="background: #6b7280; color: white; border: none; padding: 1rem 2rem; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                Upload Session
+            </button>
+        </div>
+        """, unsafe_allow_html=True)
         return
     
-    # Prepare data for visualization
-    session_data = []
-    for i, session in enumerate(sessions):
-        scores = session.analysis.get('domain_scores', {})
-        session_data.append({
-            'session': i + 1,
-            'date': session.timestamp.strftime('%Y-%m-%d'),
-            **scores
-        })
+    # Show latest session insights
+    if sessions:
+        latest_session = sessions[-1]
+        analysis = latest_session.analysis
+        
+        # Key insights from latest session
+        st.markdown("""
+        <div style="background: white; border-radius: 15px; padding: 2rem; margin: 2rem 0; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+            <h3 style="color: #374151; margin-bottom: 1rem;">Latest Session Insights</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Display key insights
+        insights = analysis.get('key_insights', [])
+        if insights:
+            for insight in insights[:3]:  # Show top 3 insights
+                st.markdown(f"""
+                <div style="background: #f8f9fa; border-left: 4px solid #6b7280; padding: 1rem; margin: 1rem 0;">
+                    <p style="color: #374151; margin: 0; font-size: 0.95rem;">{insight}</p>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        # Show therapist evaluation if available
+        therapist_eval = analysis.get('therapist_evaluation', {})
+        if therapist_eval:
+            st.markdown("""
+            <div style="background: white; border-radius: 15px; padding: 2rem; margin: 2rem 0; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                <h3 style="color: #374151; margin-bottom: 1rem;">Therapist Performance</h3>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            overall_rating = therapist_eval.get('overall_rating', 0)
+            st.markdown(f"""
+            <div style="text-align: center; margin: 2rem 0;">
+                <div style="font-size: 3rem; color: #6b7280; margin-bottom: 1rem;">⭐</div>
+                <h2 style="color: #374151; margin: 0;">{overall_rating}/10</h2>
+                <p style="color: #6b7280; margin: 0;">Overall Performance</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Show domain breakdown
+            domains = therapist_eval.get('domain_scores', {})
+            if domains:
+                col1, col2, col3, col4 = st.columns(4)
+                domain_names = ['Empathy', 'Communication', 'Techniques', 'Professionalism']
+                domain_keys = ['empathy', 'communication', 'techniques', 'professionalism']
+                
+                for i, (col, name, key) in enumerate(zip([col1, col2, col3, col4], domain_names, domain_keys)):
+                    with col:
+                        score = domains.get(key, 0)
+                        st.markdown(f"""
+                        <div style="text-align: center; background: #f8f9fa; padding: 1rem; border-radius: 10px;">
+                            <h4 style="color: #374151; margin: 0 0 0.5rem 0;">{name}</h4>
+                            <div style="font-size: 1.5rem; color: #6b7280; font-weight: 600;">{score}/10</div>
+                        </div>
+                        """, unsafe_allow_html=True)
     
-    df = pd.DataFrame(session_data)
-    
-    # Progress charts
-    domain_options = [
-        'emotional_safety',
-        'unconscious_patterns', 
-        'cognitive_restructuring',
-        'communication_changes',
-        'strengths_wellbeing',
-        'narrative_coherence',
-        'behavioral_activation'
-    ]
-    
-    selected_domains = st.multiselect(
-        "Select domains to track:",
-        domain_options,
-        default=domain_options[:3]
-    )
-    
-    if selected_domains:
-        fig = px.line(
-            df, 
-            x='session', 
-            y=selected_domains,
-            title="Progress Over Time",
-            labels={'session': 'Session Number', 'value': 'Score (0-10)'}
+    # Progress tracking if multiple sessions
+    if len(sessions) >= 2:
+        st.markdown("""
+        <div style="background: white; border-radius: 15px; padding: 2rem; margin: 2rem 0; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+            <h3 style="color: #374151; margin-bottom: 1rem;">Progress Over Time</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Prepare data for visualization
+        session_data = []
+        for i, session in enumerate(sessions):
+            scores = session.analysis.get('domain_scores', {})
+            session_data.append({
+                'session': i + 1,
+                'date': session.timestamp.strftime('%Y-%m-%d'),
+                **scores
+            })
+        
+        df = pd.DataFrame(session_data)
+        
+        # Progress charts
+        domain_options = [
+            'emotional_safety',
+            'unconscious_patterns', 
+            'cognitive_restructuring',
+            'communication_changes',
+            'strengths_wellbeing',
+            'narrative_coherence',
+            'behavioral_activation'
+        ]
+        
+        selected_domains = st.multiselect(
+            "Select domains to track:",
+            domain_options,
+            default=domain_options[:3]
         )
         
-        st.plotly_chart(fig, use_container_width=True)
-    
-    # Progress summary
-    st.subheader("Progress Summary")
-    
-    if len(sessions) >= 2:
+        if selected_domains:
+            fig = px.line(
+                df, 
+                x='session', 
+                y=selected_domains,
+                title="Progress Over Time",
+                labels={'session': 'Session Number', 'value': 'Score (0-10)'}
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
+        
+        # Progress summary
+        st.markdown("""
+        <div style="background: white; border-radius: 15px; padding: 2rem; margin: 2rem 0; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+            <h3 style="color: #374151; margin-bottom: 1rem;">Progress Summary</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
         first_session = sessions[0].analysis.get('domain_scores', {})
         last_session = sessions[-1].analysis.get('domain_scores', {})
         
@@ -1224,7 +1351,12 @@ def show_progress_tracking(services):
             if domain in first_session and domain in last_session:
                 change = last_session[domain] - first_session[domain]
                 direction = "↗️" if change > 0 else "↘️" if change < 0 else "➡️"
-                st.write(f"{domain.replace('_', ' ').title()}: {direction} {change:+.1f}")
+                st.markdown(f"""
+                <div style="background: #f8f9fa; padding: 1rem; border-radius: 10px; margin: 0.5rem 0;">
+                    <span style="color: #374151; font-weight: 600;">{domain.replace('_', ' ').title()}:</span>
+                    <span style="color: #6b7280; margin-left: 1rem;">{direction} {change:+.1f}</span>
+                </div>
+                """, unsafe_allow_html=True)
 
 def show_reports(services):
     """Show report generation interface"""
