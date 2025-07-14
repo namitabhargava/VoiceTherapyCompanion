@@ -276,75 +276,53 @@ def show_upload_interface(services):
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.markdown("""
-        <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb;">
-            <div style="background: #6b7280; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
-                <span style="font-size: 2rem;">🎤</span>
-            </div>
-            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600;">Audio Files</h3>
-            <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem;">Transform spoken sessions into therapeutic insights</p>
-            <div style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.85rem;">
-                <strong>MP3, WAV, M4A &nbsp;&nbsp;•&nbsp;&nbsp; Up to 500MB</strong>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        uploaded_audio = st.file_uploader(
-            "Choose Audio File",
-            type=['mp3', 'wav', 'mp4', 'm4a', 'ogg', 'flac', 'aac'],
-            key="audio_upload"
-        )
-        
-        if uploaded_audio:
-            st.success(f"File uploaded: {uploaded_audio.name}")
-            if st.button("🔍 Analyze Audio", type="primary", key="analyze_audio"):
-                process_uploaded_file(services, uploaded_audio)
-                
-        st.markdown("</div>", unsafe_allow_html=True)
+        # Create a container for the audio upload that looks like the card
+        with st.container():
+            uploaded_audio = st.file_uploader(
+                "🎤 Audio Files",
+                type=['mp3', 'wav', 'mp4', 'm4a', 'ogg', 'flac', 'aac'],
+                key="audio_upload",
+                help="Transform spoken sessions into therapeutic insights • MP3, WAV, M4A • Up to 500MB"
+            )
+            
+            if uploaded_audio:
+                st.success(f"File uploaded: {uploaded_audio.name}")
+                if st.button("🔍 Analyze Audio", type="primary", key="analyze_audio"):
+                    process_uploaded_file(services, uploaded_audio)
     
     with col2:
-        st.markdown("""
-        <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb;">
-            <div style="background: #d97706; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
-                <span style="font-size: 2rem;">📄</span>
-            </div>
-            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600;">Text Script</h3>
-            <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem;">Direct analysis of written therapeutic content</p>
-            <div style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.85rem;">
-                <strong>TXT, DOC, PDF &nbsp;&nbsp;•&nbsp;&nbsp; Up to 50MB</strong>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        uploaded_transcript = st.file_uploader(
-            "Choose Transcript",
-            type=['txt', 'doc', 'docx', 'pdf'],
-            key="transcript_upload"
-        )
-        
-        if uploaded_transcript:
-            st.success(f"File uploaded: {uploaded_transcript.name}")
+        # Create a container for the file upload that looks like the card
+        with st.container():
+            uploaded_transcript = st.file_uploader(
+                "📄 Text Script",
+                type=['txt', 'doc', 'docx', 'pdf'],
+                key="transcript_upload",
+                help="Direct analysis of written therapeutic content • TXT, DOC, PDF • Up to 50MB"
+            )
             
-            # Show preview for PDF files
-            if uploaded_transcript.type == "application/pdf":
-                if st.button("👀 Preview PDF Content", key="preview_pdf"):
-                    file_handler = FileHandler()
-                    preview_text = file_handler.extract_text_from_file(uploaded_transcript)
-                    
-                    if preview_text:
-                        # Show first 1000 characters as preview
-                        preview_content = preview_text[:1000] + "..." if len(preview_text) > 1000 else preview_text
-                        st.text_area("PDF Content Preview", preview_content, height=200)
-                        
-                        # Show file statistics
-                        word_count = len(preview_text.split())
-                        char_count = len(preview_text)
-                        st.info(f"📄 Document contains approximately {word_count:,} words and {char_count:,} characters")
-                    else:
-                        st.warning("Could not extract text from PDF. Please ensure the PDF contains readable text.")
-            
-            if st.button("🔍 Analyze Transcript", type="primary", key="analyze_transcript"):
-                process_transcript_file(services, uploaded_transcript)
+            if uploaded_transcript:
+                st.success(f"File uploaded: {uploaded_transcript.name}")
                 
-        st.markdown("</div>", unsafe_allow_html=True)
+                # Show preview for PDF files
+                if uploaded_transcript.type == "application/pdf":
+                    if st.button("👀 Preview PDF Content", key="preview_pdf"):
+                        file_handler = FileHandler()
+                        preview_text = file_handler.extract_text_from_file(uploaded_transcript)
+                        
+                        if preview_text:
+                            # Show first 1000 characters as preview
+                            preview_content = preview_text[:1000] + "..." if len(preview_text) > 1000 else preview_text
+                            st.text_area("PDF Content Preview", preview_content, height=200)
+                            
+                            # Show file statistics
+                            word_count = len(preview_text.split())
+                            char_count = len(preview_text)
+                            st.info(f"📄 Document contains approximately {word_count:,} words and {char_count:,} characters")
+                        else:
+                            st.warning("Could not extract text from PDF. Please ensure the PDF contains readable text.")
+                
+                if st.button("🔍 Analyze Transcript", type="primary", key="analyze_transcript"):
+                    process_transcript_file(services, uploaded_transcript)
     
     with col3:
         st.markdown("""
