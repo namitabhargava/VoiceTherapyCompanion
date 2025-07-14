@@ -236,6 +236,58 @@ def main():
         transform: translateY(-1px) !important;
     }
     
+    /* Text Pillar Card Styling */
+    .text-pillar-card {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem 2rem;
+        margin: 1rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        text-align: center;
+        border: 1px solid #e5e7eb;
+        min-height: 400px;
+        position: relative;
+    }
+    
+    .text-pillar-icon {
+        background: #d4b894;
+        color: white;
+        padding: 2rem;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        display: inline-block;
+        box-shadow: 0 4px 12px rgba(212, 184, 148, 0.3);
+    }
+    
+    .text-pillar-title {
+        color: #374151;
+        margin-bottom: 1rem;
+        font-size: 1.8rem;
+        font-weight: 700;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    .text-pillar-description {
+        color: #6b7280;
+        margin-bottom: 2rem;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    
+    .text-pillar-specs {
+        color: #6b7280;
+        margin-bottom: 2.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .text-pillar-specs .spec-item {
+        font-weight: 500;
+    }
+    
+    .text-pillar-specs .spec-separator {
+        margin: 0 0.5rem;
+    }
+    
     /* Specific styling for text pillar file uploader */
     div[data-testid="stFileUploader"] > div > div > div > div > button {
         background: #d97706 !important;
@@ -255,6 +307,31 @@ def main():
     }
     
     div[data-testid="stFileUploader"] > div > div > div > div > button:hover {
+        background: #b45309 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4) !important;
+    }
+    
+    /* Target specifically the text pillar uploader */
+    .text-pillar-uploader div[data-testid="stFileUploader"] > div > div > div > div > button {
+        background: #d97706 !important;
+        color: white !important;
+        border: none !important;
+        padding: 1rem 2rem !important;
+        border-radius: 30px !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        width: auto !important;
+        max-width: 250px !important;
+        margin: 0 auto !important;
+        display: block !important;
+        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3) !important;
+        text-transform: none !important;
+    }
+    
+    .text-pillar-uploader div[data-testid="stFileUploader"] > div > div > div > div > button:hover {
         background: #b45309 !important;
         transform: translateY(-2px) !important;
         box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4) !important;
@@ -376,9 +453,10 @@ def show_upload_interface(services):
     with col2:
         # Create a container for the Text Pillar with integrated upload
         with st.container():
+            # Create the card design exactly matching the image
             st.markdown("""
-            <div style="background: white; border-radius: 20px; padding: 3rem 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb; min-height: 400px;">
-                <div style="background: #d4b894; color: white; padding: 2rem; border-radius: 20px; margin-bottom: 2rem; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <div class="text-pillar-card">
+                <div class="text-pillar-icon">
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="white"/>
                         <path d="M14 2V8H20" fill="white"/>
@@ -387,15 +465,18 @@ def show_upload_interface(services):
                         <path d="M10 9H8V11H10V9Z" fill="#d4b894"/>
                     </svg>
                 </div>
-                <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.8rem; font-weight: 700;">Text Pillar</h3>
-                <p style="color: #6b7280; margin-bottom: 2rem; font-size: 1rem; line-height: 1.5;">Direct analysis of written therapeutic content</p>
-                <div style="color: #6b7280; margin-bottom: 2.5rem; font-size: 0.9rem;">
-                    <span style="font-weight: 500;">TXT, DOC, PDF</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 500;">Up to 50MB</span>
+                <h3 class="text-pillar-title">Text Pillar</h3>
+                <p class="text-pillar-description">Direct analysis of written therapeutic content</p>
+                <div class="text-pillar-specs">
+                    <span class="spec-item">TXT, DOC, PDF</span>
+                    <span class="spec-separator">•</span>
+                    <span class="spec-item">Up to 50MB</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
             
-            # Custom styled file uploader button
+            # Custom styled file uploader button wrapped in a container to target styling
+            st.markdown('<div class="text-pillar-uploader">', unsafe_allow_html=True)
             uploaded_transcript = st.file_uploader(
                 "Choose Document",
                 type=['txt', 'doc', 'docx', 'pdf'],
@@ -403,6 +484,7 @@ def show_upload_interface(services):
                 help="Upload text documents for analysis",
                 label_visibility="collapsed"
             )
+            st.markdown('</div>', unsafe_allow_html=True)
         
         if uploaded_transcript:
             st.success(f"File uploaded: {uploaded_transcript.name}")
