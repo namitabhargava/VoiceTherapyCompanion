@@ -570,6 +570,7 @@ def show_upload_interface(services):
                 show_zoom_recordings(services)
             else:
                 st.session_state.show_zoom_auth = True
+                st.success("Opening Zoom authentication...")
                 st.rerun()
         
         # Google Meet button
@@ -762,11 +763,7 @@ def process_transcript_file(services, uploaded_file):
 
 def show_zoom_auth_modal(services):
     """Show Zoom authentication modal"""
-    st.markdown("""
-    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
-        <div style="background: white; border-radius: 15px; padding: 2rem; width: 500px; max-width: 90vw; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
-    """, unsafe_allow_html=True)
-    
+    st.markdown("---")
     st.markdown("### 🔵 Connect to Zoom")
     st.markdown("Enter your Zoom OAuth credentials to connect to your Zoom account and access cloud recordings.")
     
@@ -774,26 +771,31 @@ def show_zoom_auth_modal(services):
     if 'zoom_client_id' in st.session_state and 'zoom_client_secret' in st.session_state:
         st.success("Zoom credentials already configured!")
         
-        col1, col2 = st.columns(2)
+        col1, col2, col3 = st.columns(3)
         with col1:
             if st.button("Test Connection", key="test_zoom"):
                 if test_zoom_connection(services):
-                    st.success("✅ Connected to Zoom successfully!")
+                    st.success("Connected to Zoom successfully!")
                     st.session_state.zoom_authenticated = True
                     st.session_state.show_zoom_auth = False
                     st.rerun()
                 else:
-                    st.error("❌ Connection failed. Please check your credentials.")
+                    st.error("Connection failed. Please check your credentials.")
         
         with col2:
             if st.button("Update Credentials", key="update_zoom"):
                 del st.session_state.zoom_client_id
                 del st.session_state.zoom_client_secret
                 st.rerun()
+                
+        with col3:
+            if st.button("Close", key="close_zoom_modal"):
+                st.session_state.show_zoom_auth = False
+                st.rerun()
     else:
         # Credentials input form
         with st.form("zoom_auth_form"):
-            st.markdown("#### OAuth Application Setup")
+            st.markdown("#### OAuth Application Setup Instructions")
             st.markdown("1. Go to [Zoom Marketplace](https://marketplace.zoom.us/develop/create)")
             st.markdown("2. Create an OAuth app")
             st.markdown("3. Set redirect URI to: `https://localhost:5000/oauth/zoom`")
@@ -815,12 +817,12 @@ def show_zoom_auth_modal(services):
                         
                         # Test connection
                         if test_zoom_connection(services):
-                            st.success("✅ Connected to Zoom successfully!")
+                            st.success("Connected to Zoom successfully!")
                             st.session_state.zoom_authenticated = True
                             st.session_state.show_zoom_auth = False
                             st.rerun()
                         else:
-                            st.error("❌ Connection failed. Please check your credentials.")
+                            st.error("Connection failed. Please check your credentials.")
                     else:
                         st.error("Please enter both Client ID and Client Secret")
             
@@ -829,25 +831,16 @@ def show_zoom_auth_modal(services):
                     st.session_state.show_zoom_auth = False
                     st.rerun()
     
-    # Close button
-    if st.button("✕", key="close_zoom_modal"):
-        st.session_state.show_zoom_auth = False
-        st.rerun()
-    
-    st.markdown("</div></div>", unsafe_allow_html=True)
+    st.markdown("---")
 
 def show_google_auth_modal(services):
     """Show Google Meet authentication modal"""
-    st.markdown("""
-    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
-        <div style="background: white; border-radius: 15px; padding: 2rem; width: 500px; max-width: 90vw; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
-    """, unsafe_allow_html=True)
-    
+    st.markdown("---")
     st.markdown("### 🟢 Connect to Google Meet")
     st.markdown("Enter your Google OAuth credentials to connect to your Google account and access Meet recordings.")
     
     with st.form("google_auth_form"):
-        st.markdown("#### OAuth Application Setup")
+        st.markdown("#### OAuth Application Setup Instructions")
         st.markdown("1. Go to [Google Cloud Console](https://console.cloud.google.com/)")
         st.markdown("2. Create OAuth 2.0 credentials")
         st.markdown("3. Enable Drive API")
@@ -864,7 +857,7 @@ def show_google_auth_modal(services):
                     st.session_state.google_client_secret = client_secret
                     os.environ['GOOGLE_CLIENT_ID'] = client_id
                     os.environ['GOOGLE_CLIENT_SECRET'] = client_secret
-                    st.success("✅ Google credentials saved!")
+                    st.success("Google credentials saved!")
                     st.session_state.google_authenticated = True
                     st.session_state.show_google_auth = False
                     st.rerun()
@@ -876,20 +869,16 @@ def show_google_auth_modal(services):
                 st.session_state.show_google_auth = False
                 st.rerun()
     
-    st.markdown("</div></div>", unsafe_allow_html=True)
+    st.markdown("---")
 
 def show_teams_auth_modal(services):
     """Show Microsoft Teams authentication modal"""
-    st.markdown("""
-    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
-        <div style="background: white; border-radius: 15px; padding: 2rem; width: 500px; max-width: 90vw; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
-    """, unsafe_allow_html=True)
-    
+    st.markdown("---")
     st.markdown("### 🟣 Connect to Microsoft Teams")
     st.markdown("Enter your Microsoft Teams OAuth credentials to connect to your Teams account and access recordings.")
     
     with st.form("teams_auth_form"):
-        st.markdown("#### OAuth Application Setup")
+        st.markdown("#### OAuth Application Setup Instructions")
         st.markdown("1. Go to [Azure Portal](https://portal.azure.com/)")
         st.markdown("2. Register an app in Azure AD")
         st.markdown("3. Add Microsoft Graph API permissions")
@@ -906,7 +895,7 @@ def show_teams_auth_modal(services):
                     st.session_state.teams_client_secret = client_secret
                     os.environ['TEAMS_CLIENT_ID'] = client_id
                     os.environ['TEAMS_CLIENT_SECRET'] = client_secret
-                    st.success("✅ Teams credentials saved!")
+                    st.success("Teams credentials saved!")
                     st.session_state.teams_authenticated = True
                     st.session_state.show_teams_auth = False
                     st.rerun()
@@ -918,7 +907,7 @@ def show_teams_auth_modal(services):
                 st.session_state.show_teams_auth = False
                 st.rerun()
     
-    st.markdown("</div></div>", unsafe_allow_html=True)
+    st.markdown("---")
 
 def test_zoom_connection(services):
     """Test the Zoom connection"""
