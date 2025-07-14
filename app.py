@@ -241,21 +241,23 @@ def main():
         background: #d97706 !important;
         color: white !important;
         border: none !important;
-        padding: 0.8rem 1.5rem !important;
-        border-radius: 25px !important;
-        font-size: 0.9rem !important;
-        font-weight: 500 !important;
+        padding: 1rem 2rem !important;
+        border-radius: 30px !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
         cursor: pointer !important;
         transition: all 0.2s ease !important;
-        width: 100% !important;
-        max-width: 200px !important;
+        width: auto !important;
+        max-width: 250px !important;
         margin: 0 auto !important;
         display: block !important;
+        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3) !important;
     }
     
     div[data-testid="stFileUploader"] > div > div > div > div > button:hover {
         background: #b45309 !important;
-        transform: translateY(-1px) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4) !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -375,24 +377,31 @@ def show_upload_interface(services):
         # Create a container for the Text Pillar with integrated upload
         with st.container():
             st.markdown("""
-            <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb; min-height: 400px;">
-                <div style="background: #d97706; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
-                    <span style="font-size: 2rem;">📄</span>
+            <div style="background: white; border-radius: 20px; padding: 3rem 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb; min-height: 400px;">
+                <div style="background: #d4b894; color: white; padding: 2rem; border-radius: 20px; margin-bottom: 2rem; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="white"/>
+                        <path d="M14 2V8H20" fill="white"/>
+                        <path d="M16 13H8V15H16V13Z" fill="#d4b894"/>
+                        <path d="M16 17H8V19H16V17Z" fill="#d4b894"/>
+                        <path d="M10 9H8V11H10V9Z" fill="#d4b894"/>
+                    </svg>
                 </div>
-                <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Text Pillar</h3>
-                <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Direct analysis of written therapeutic content</p>
-                <div style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.85rem;">
-                    <span style="font-weight: 600;">TXT, DOC, DOCX, PDF</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 200MB</span>
+                <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.8rem; font-weight: 700;">Text Pillar</h3>
+                <p style="color: #6b7280; margin-bottom: 2rem; font-size: 1rem; line-height: 1.5;">Direct analysis of written therapeutic content</p>
+                <div style="color: #6b7280; margin-bottom: 2.5rem; font-size: 0.9rem;">
+                    <span style="font-weight: 500;">TXT, DOC, PDF</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 500;">Up to 50MB</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
             
             # Custom styled file uploader button
             uploaded_transcript = st.file_uploader(
-                "📁 Browse Files",
+                "Choose Document",
                 type=['txt', 'doc', 'docx', 'pdf'],
                 key="transcript_upload",
-                help="Upload text documents for analysis"
+                help="Upload text documents for analysis",
+                label_visibility="collapsed"
             )
         
         if uploaded_transcript:
