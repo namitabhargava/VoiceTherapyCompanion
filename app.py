@@ -282,13 +282,13 @@ def show_upload_interface(services):
                 </div>
                 <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Audio Foundation</h3>
                 <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Transform spoken sessions into therapeutic insights</p>
-                <div style="color: #6b7280; margin-bottom: 2rem; font-size: 0.85rem;">
+                <div style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.85rem;">
                     <span style="font-weight: 600;">MP3, WAV, M4A</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 500MB</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
             
-            # Custom styled Browse Files button for audio
+            # Custom styled Browse Files button positioned right below the file format text
             if st.button("🎵 Browse Files", key="browse_audio", type="primary", 
                         help="Click to upload audio files for transcription and analysis"):
                 st.session_state.show_audio_uploader = True
@@ -325,13 +325,13 @@ def show_upload_interface(services):
                 </div>
                 <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Text Pillar</h3>
                 <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Direct analysis of written therapeutic content</p>
-                <div style="color: #6b7280; margin-bottom: 2rem; font-size: 0.85rem;">
+                <div style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.85rem;">
                     <span style="font-weight: 600;">TXT, DOC, PDF</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 50MB</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
             
-            # Custom styled Browse Files button
+            # Custom styled Browse Files button positioned right below the file format text
             if st.button("📁 Browse Files", key="browse_transcript", type="primary", 
                         help="Click to upload text documents for analysis"):
                 st.session_state.show_transcript_uploader = True
