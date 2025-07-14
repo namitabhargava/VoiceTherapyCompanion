@@ -677,19 +677,41 @@ class AnalysisService:
                 else:
                     transcript_text = prompt.lower()
             
-            # Basic scoring based on keywords
-            positive_keywords = ['good', 'better', 'progress', 'understand', 'feel', 'help', 'support', 'positive', 'growth', 'insight']
-            negative_keywords = ['difficult', 'hard', 'struggle', 'problem', 'issue', 'challenge', 'worried', 'anxious', 'sad', 'angry']
+            # Enhanced scoring based on therapeutic indicators
+            # Therapist quality indicators
+            therapist_positive = ['listen', 'understand', 'explore', 'feel', 'tell me more', 'how does that', 'what do you think', 'reflect', 'validate', 'support', 'acknowledge', 'empathy', 'compassionate']
+            therapist_negative = ['should', 'must', 'wrong', 'bad', 'fix', 'solve', 'simple', 'just', 'advice', 'tell you what to do', 'obvious', 'clearly']
             
-            positive_count = sum(1 for word in positive_keywords if word in transcript_text)
-            negative_count = sum(1 for word in negative_keywords if word in transcript_text)
+            # Client progress indicators
+            client_positive = ['better', 'progress', 'insight', 'understand', 'realize', 'aware', 'growth', 'helpful', 'clearer', 'learned', 'different perspective']
+            client_negative = ['worse', 'stuck', 'hopeless', 'confused', 'frustrated', 'not helping', 'pointless', 'waste', 'giving up']
             
-            # Basic score calculation
-            base_score = 5
-            if positive_count > negative_count:
-                score = min(10, base_score + (positive_count - negative_count) * 0.5)
+            # Count therapeutic indicators
+            therapist_pos_count = sum(1 for phrase in therapist_positive if phrase in transcript_text)
+            therapist_neg_count = sum(1 for phrase in therapist_negative if phrase in transcript_text)
+            client_pos_count = sum(1 for phrase in client_positive if phrase in transcript_text)
+            client_neg_count = sum(1 for phrase in client_negative if phrase in transcript_text)
+            
+            # Calculate dynamic score based on transcript length and quality indicators
+            transcript_length = len(transcript_text.split())
+            
+            # Base score depends on session engagement
+            if transcript_length < 50:
+                base_score = 4  # Very short session
+            elif transcript_length < 200:
+                base_score = 5  # Short session
+            elif transcript_length < 500:
+                base_score = 6  # Medium session
             else:
-                score = max(1, base_score - (negative_count - positive_count) * 0.5)
+                base_score = 7  # Long, engaged session
+            
+            # Adjust based on therapeutic quality
+            therapist_quality = (therapist_pos_count - therapist_neg_count) * 0.3
+            client_progress = (client_pos_count - client_neg_count) * 0.4
+            
+            # Final score calculation
+            score = base_score + therapist_quality + client_progress
+            score = max(1, min(10, score))  # Clamp between 1-10
             
             return {
                 "score": round(score, 1),
@@ -1202,19 +1224,37 @@ class AnalysisService:
             # Handle both string and dict responses
             if isinstance(evaluation_result, dict):
                 # If we got a dict (from local analysis), convert it to expected format
+                base_score = evaluation_result.get("score", 6)
+                
+                # Generate dynamic recommendations based on score
+                if base_score >= 8:
+                    recommendations = [
+                        "Your therapist shows strong therapeutic skills",
+                        "Continue building on this positive therapeutic relationship",
+                        "Discuss deeper topics as you feel comfortable"
+                    ]
+                elif base_score >= 6:
+                    recommendations = [
+                        "Your therapist demonstrates adequate therapeutic skills",
+                        "Continue sessions while monitoring your progress",
+                        "Provide feedback on what works best for you"
+                    ]
+                else:
+                    recommendations = [
+                        "Consider discussing your therapy goals with your therapist",
+                        "Evaluate if this therapeutic approach matches your needs",
+                        "You may benefit from exploring other therapeutic options"
+                    ]
+                
                 evaluation = {
-                    "therapist_empathy_score": evaluation_result.get("score", 6),
+                    "therapist_empathy_score": base_score,
                     "empathy_evidence": evaluation_result.get("empathy_evidence", ["Basic analysis performed"]),
                     "therapeutic_techniques": evaluation_result.get("therapeutic_techniques", ["Standard approaches detected"]),
-                    "burnout_signs": {"present": False, "explanation": "Limited assessment available"},
-                    "client_progress": {"present": True, "examples": ["Session engagement present"]},
-                    "therapist_fit_score": evaluation_result.get("score", 6),
-                    "fit_justification": "Basic therapeutic assessment - detailed analysis requires AI API",
-                    "client_recommendations": [
-                        "Continue with current therapist while monitoring progress",
-                        "Provide feedback on session experience",
-                        "Consider professional evaluation for detailed assessment"
-                    ],
+                    "burnout_signs": {"present": base_score < 5, "explanation": "Assessment based on session engagement"},
+                    "client_progress": {"present": base_score >= 6, "examples": ["Session engagement present"]},
+                    "therapist_fit_score": base_score,
+                    "fit_justification": f"Score {base_score}/10 - Basic therapeutic assessment (detailed analysis requires AI API)",
+                    "client_recommendations": recommendations,
                     "raw_evaluation": str(evaluation_result)
                 }
             else:
