@@ -663,8 +663,19 @@ class AnalysisService:
     def _analyze_with_local_model(self, prompt, system_context):
         """Perform basic local analysis without external APIs"""
         try:
-            # Simple keyword-based analysis for fallback
-            transcript_text = prompt.split("Transcript: ")[1].split("Respond in JSON format")[0].lower()
+            # Handle both string and dict inputs
+            if isinstance(prompt, dict):
+                transcript_text = str(prompt).lower()
+            else:
+                # Try to extract transcript from prompt
+                if "Transcript: " in prompt:
+                    parts = prompt.split("Transcript: ")
+                    if len(parts) > 1:
+                        transcript_text = parts[1].split("Respond in JSON format")[0].lower()
+                    else:
+                        transcript_text = prompt.lower()
+                else:
+                    transcript_text = prompt.lower()
             
             # Basic scoring based on keywords
             positive_keywords = ['good', 'better', 'progress', 'understand', 'feel', 'help', 'support', 'positive', 'growth', 'insight']
@@ -694,8 +705,12 @@ class AnalysisService:
             st.warning(f"Local analysis failed: {str(e)}")
             return {
                 "score": 5,
-                "error": "Analysis unavailable",
-                "note": "Please provide API keys for detailed analysis"
+                "empathy_evidence": ["Local analysis - error occurred"],
+                "genuineness_indicators": ["Local analysis - error occurred"],
+                "positive_regard_moments": ["Local analysis - error occurred"],
+                "client_self_exploration": ["Local analysis - error occurred"],
+                "areas_for_improvement": ["Please provide API keys for detailed analysis"],
+                "note": "Analysis unavailable due to error"
             }
     
     def _create_basic_analysis(self, hf_result):
@@ -1184,48 +1199,66 @@ class AnalysisService:
         evaluation_result = self._analyze_with_providers(expert_prompt, "Expert Therapist Evaluation")
         
         if evaluation_result:
-            # Parse the structured response
-            lines = evaluation_result.strip().split('\n')
-            evaluation = {
-                "therapist_empathy_score": 7,
-                "empathy_evidence": ["Comprehensive analysis performed"],
-                "therapeutic_techniques": ["Multiple therapeutic approaches assessed"],
-                "burnout_signs": {"present": False, "explanation": "No clear signs detected"},
-                "client_progress": {"present": True, "examples": ["Session engagement present"]},
-                "therapist_fit_score": 7,
-                "fit_justification": "Moderate therapeutic alignment observed",
-                "client_recommendations": [
-                    "Continue sessions to build therapeutic relationship",
-                    "Discuss therapy goals and expectations",
-                    "Monitor progress over next few sessions"
-                ],
-                "raw_evaluation": evaluation_result
-            }
-            
-            # Try to extract specific scores and insights from the response
-            try:
-                import re
+            # Handle both string and dict responses
+            if isinstance(evaluation_result, dict):
+                # If we got a dict (from local analysis), convert it to expected format
+                evaluation = {
+                    "therapist_empathy_score": evaluation_result.get("score", 6),
+                    "empathy_evidence": evaluation_result.get("empathy_evidence", ["Basic analysis performed"]),
+                    "therapeutic_techniques": evaluation_result.get("therapeutic_techniques", ["Standard approaches detected"]),
+                    "burnout_signs": {"present": False, "explanation": "Limited assessment available"},
+                    "client_progress": {"present": True, "examples": ["Session engagement present"]},
+                    "therapist_fit_score": evaluation_result.get("score", 6),
+                    "fit_justification": "Basic therapeutic assessment - detailed analysis requires AI API",
+                    "client_recommendations": [
+                        "Continue with current therapist while monitoring progress",
+                        "Provide feedback on session experience",
+                        "Consider professional evaluation for detailed assessment"
+                    ],
+                    "raw_evaluation": str(evaluation_result)
+                }
+            else:
+                # Handle string response
+                evaluation = {
+                    "therapist_empathy_score": 7,
+                    "empathy_evidence": ["Comprehensive analysis performed"],
+                    "therapeutic_techniques": ["Multiple therapeutic approaches assessed"],
+                    "burnout_signs": {"present": False, "explanation": "No clear signs detected"},
+                    "client_progress": {"present": True, "examples": ["Session engagement present"]},
+                    "therapist_fit_score": 7,
+                    "fit_justification": "Moderate therapeutic alignment observed",
+                    "client_recommendations": [
+                        "Continue sessions to build therapeutic relationship",
+                        "Discuss therapy goals and expectations",
+                        "Monitor progress over next few sessions"
+                    ],
+                    "raw_evaluation": evaluation_result
+                }
                 
-                # Extract empathy score
-                empathy_match = re.search(r'Empathy.*?(\d+)', evaluation_result, re.IGNORECASE)
-                if empathy_match:
-                    evaluation["therapist_empathy_score"] = int(empathy_match.group(1))
-                
-                # Extract fit score
-                fit_match = re.search(r'Fit Score.*?(\d+)', evaluation_result, re.IGNORECASE)
-                if fit_match:
-                    evaluation["therapist_fit_score"] = int(fit_match.group(1))
-                
-                # Extract burnout signs
-                if "burnout" in evaluation_result.lower() or "disengagement" in evaluation_result.lower():
-                    evaluation["burnout_signs"]["present"] = "yes" in evaluation_result.lower()
-                
-                # Extract progress signals
-                if "progress" in evaluation_result.lower():
-                    evaluation["client_progress"]["present"] = "yes" in evaluation_result.lower()
+                # Try to extract specific scores and insights from the response
+                try:
+                    import re
                     
-            except Exception as e:
-                pass  # Keep default values if parsing fails
+                    # Extract empathy score
+                    empathy_match = re.search(r'Empathy.*?(\d+)', evaluation_result, re.IGNORECASE)
+                    if empathy_match:
+                        evaluation["therapist_empathy_score"] = int(empathy_match.group(1))
+                    
+                    # Extract fit score
+                    fit_match = re.search(r'Fit Score.*?(\d+)', evaluation_result, re.IGNORECASE)
+                    if fit_match:
+                        evaluation["therapist_fit_score"] = int(fit_match.group(1))
+                    
+                    # Extract burnout signs
+                    if "burnout" in evaluation_result.lower() or "disengagement" in evaluation_result.lower():
+                        evaluation["burnout_signs"]["present"] = "yes" in evaluation_result.lower()
+                    
+                    # Extract progress signals
+                    if "progress" in evaluation_result.lower():
+                        evaluation["client_progress"]["present"] = "yes" in evaluation_result.lower()
+                        
+                except Exception as e:
+                    pass  # Keep default values if parsing fails
             
             return evaluation
         else:
