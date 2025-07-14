@@ -335,68 +335,11 @@ def show_upload_interface(services):
         </div>
         """, unsafe_allow_html=True)
         
-        # Custom drag-and-drop styling
-        st.markdown("""
-        <style>
-        .upload-container {
-            border: 2px dashed #d1d5db;
-            border-radius: 12px;
-            padding: 2rem;
-            margin: 1rem;
-            background: #f9fafb;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-        
-        .upload-container:hover {
-            border-color: #d97706;
-            background: #fef3c7;
-        }
-        
-        .drag-text {
-            font-size: 1.1rem;
-            color: #374151;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-        
-        .limit-text {
-            font-size: 0.9rem;
-            color: #6b7280;
-            margin-bottom: 1.5rem;
-        }
-        
-        .browse-button {
-            background: #d97706;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            border: none;
-            cursor: pointer;
-            margin-top: 1rem;
-        }
-        
-        .browse-button:hover {
-            background: #b45309;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-        
-        # Drag and drop area
-        st.markdown("""
-        <div class="upload-container">
-            <div class="drag-text">Drag and drop file here</div>
-            <div class="limit-text">Limit 200MB per file • TXT, DOC, DOCX, PDF</div>
-        </div>
-        """, unsafe_allow_html=True)
-        
         uploaded_transcript = st.file_uploader(
-            "Browse files",
+            "📄 **Drag and drop file here**\n\nLimit 200MB per file • TXT, DOC, DOCX, PDF",
             type=['txt', 'doc', 'docx', 'pdf'],
             key="transcript_upload",
-            label_visibility="collapsed"
+            help="You can drag and drop your file here or click to browse"
         )
         
         if uploaded_transcript:
