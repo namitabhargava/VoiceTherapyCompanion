@@ -272,82 +272,162 @@ def show_upload_interface(services):
     </div>
     """, unsafe_allow_html=True)
     
+    # Main title section
+    st.markdown("""
+    <div style="text-align: center; padding: 2rem 0; margin-bottom: 2rem;">
+        <h1 style="color: #1f2937; font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;">Upload Session Content</h1>
+        <p style="color: #6b7280; font-size: 1.1rem; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+            Choose your path to therapeutic insight. Each method builds upon the foundation of evidence-based analysis.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
     # Three-column layout matching the design
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        # Create a container for the audio upload that looks like the card
-        with st.container():
-            uploaded_audio = st.file_uploader(
-                "🎤 Audio Files",
-                type=['mp3', 'wav', 'mp4', 'm4a', 'ogg', 'flac', 'aac'],
-                key="audio_upload",
-                help="Transform spoken sessions into therapeutic insights • MP3, WAV, M4A • Up to 500MB"
-            )
-            
-            if uploaded_audio:
-                st.success(f"File uploaded: {uploaded_audio.name}")
-                if st.button("🔍 Analyze Audio", type="primary", key="analyze_audio"):
-                    process_uploaded_file(services, uploaded_audio)
+        st.markdown("""
+        <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb; min-height: 400px;">
+            <div style="background: #6b7280; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
+                <span style="font-size: 2rem;">🎤</span>
+            </div>
+            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Audio Foundation</h3>
+            <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Transform spoken sessions into therapeutic insights</p>
+            <div style="color: #6b7280; margin-bottom: 2rem; font-size: 0.85rem;">
+                <span style="font-weight: 600;">MP3, WAV, M4A</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 500MB</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Audio upload button - styled to match the design
+        st.markdown("""
+        <style>
+        .audio-upload-button {
+            background: #6b7280;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        uploaded_audio = st.file_uploader(
+            "Choose Audio",
+            type=['mp3', 'wav', 'mp4', 'm4a', 'ogg', 'flac', 'aac'],
+            key="audio_upload",
+            label_visibility="collapsed"
+        )
+        
+        if uploaded_audio:
+            st.success(f"File uploaded: {uploaded_audio.name}")
+            if st.button("🔍 Analyze Audio", type="primary", key="analyze_audio"):
+                process_uploaded_file(services, uploaded_audio)
     
     with col2:
-        # Create a container for the file upload that looks like the card
-        with st.container():
-            uploaded_transcript = st.file_uploader(
-                "📄 Text Script",
-                type=['txt', 'doc', 'docx', 'pdf'],
-                key="transcript_upload",
-                help="Direct analysis of written therapeutic content • TXT, DOC, PDF • Up to 50MB"
-            )
+        st.markdown("""
+        <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb; min-height: 400px;">
+            <div style="background: #d97706; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
+                <span style="font-size: 2rem;">📄</span>
+            </div>
+            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Text Pillar</h3>
+            <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Direct analysis of written therapeutic content</p>
+            <div style="color: #6b7280; margin-bottom: 2rem; font-size: 0.85rem;">
+                <span style="font-weight: 600;">TXT, DOC, PDF</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 50MB</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Document upload button - styled to match the design
+        st.markdown("""
+        <style>
+        .document-upload-button {
+            background: #d97706;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        uploaded_transcript = st.file_uploader(
+            "Choose Document",
+            type=['txt', 'doc', 'docx', 'pdf'],
+            key="transcript_upload",
+            label_visibility="collapsed"
+        )
+        
+        if uploaded_transcript:
+            st.success(f"File uploaded: {uploaded_transcript.name}")
             
-            if uploaded_transcript:
-                st.success(f"File uploaded: {uploaded_transcript.name}")
-                
-                # Show preview for PDF files
-                if uploaded_transcript.type == "application/pdf":
-                    if st.button("👀 Preview PDF Content", key="preview_pdf"):
-                        file_handler = FileHandler()
-                        preview_text = file_handler.extract_text_from_file(uploaded_transcript)
+            # Show preview for PDF files
+            if uploaded_transcript.type == "application/pdf":
+                if st.button("👀 Preview PDF Content", key="preview_pdf"):
+                    file_handler = FileHandler()
+                    preview_text = file_handler.extract_text_from_file(uploaded_transcript)
+                    
+                    if preview_text:
+                        # Show first 1000 characters as preview
+                        preview_content = preview_text[:1000] + "..." if len(preview_text) > 1000 else preview_text
+                        st.text_area("PDF Content Preview", preview_content, height=200)
                         
-                        if preview_text:
-                            # Show first 1000 characters as preview
-                            preview_content = preview_text[:1000] + "..." if len(preview_text) > 1000 else preview_text
-                            st.text_area("PDF Content Preview", preview_content, height=200)
-                            
-                            # Show file statistics
-                            word_count = len(preview_text.split())
-                            char_count = len(preview_text)
-                            st.info(f"📄 Document contains approximately {word_count:,} words and {char_count:,} characters")
-                        else:
-                            st.warning("Could not extract text from PDF. Please ensure the PDF contains readable text.")
-                
-                if st.button("🔍 Analyze Transcript", type="primary", key="analyze_transcript"):
-                    process_transcript_file(services, uploaded_transcript)
+                        # Show file statistics
+                        word_count = len(preview_text.split())
+                        char_count = len(preview_text)
+                        st.info(f"📄 Document contains approximately {word_count:,} words and {char_count:,} characters")
+                    else:
+                        st.warning("Could not extract text from PDF. Please ensure the PDF contains readable text.")
+            
+            if st.button("🔍 Analyze Transcript", type="primary", key="analyze_transcript"):
+                process_transcript_file(services, uploaded_transcript)
     
     with col3:
         st.markdown("""
-        <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb;">
+        <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb; min-height: 400px;">
             <div style="background: #059669; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
                 <span style="font-size: 2rem;">📹</span>
             </div>
-            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600;">Live Session</h3>
-            <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem;">Real-time therapeutic session analysis</p>
+            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Live Balance</h3>
+            <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Real-time therapeutic session analysis</p>
             <div style="margin-bottom: 1.5rem;">
-                <div style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 0.5rem;">📹 Zoom</div>
-                <div style="background: #059669; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 0.5rem;">📹 Google Meet</div>
-                <div style="background: #7c3aed; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem;">📹 Teams</div>
+                <div style="background: #3b82f6; color: white; padding: 0.8rem 1.5rem; border-radius: 25px; font-size: 0.9rem; margin-bottom: 0.8rem; font-weight: 500;">
+                    <span style="margin-right: 0.5rem;">🔵</span>Zoom
+                </div>
+                <div style="background: #059669; color: white; padding: 0.8rem 1.5rem; border-radius: 25px; font-size: 0.9rem; margin-bottom: 0.8rem; font-weight: 500;">
+                    <span style="margin-right: 0.5rem;">🟢</span>Google Meet
+                </div>
+                <div style="background: #7c3aed; color: white; padding: 0.8rem 1.5rem; border-radius: 25px; font-size: 0.9rem; font-weight: 500;">
+                    <span style="margin-right: 0.5rem;">🟣</span>Teams
+                </div>
             </div>
         </div>
         """, unsafe_allow_html=True)
     
     # Security notice matching design
     st.markdown("""
-    <div style="background: #f0f9ff; border: 1px solid #e0f2fe; border-radius: 15px; padding: 2rem; margin: 2rem 0; display: flex; align-items: center; gap: 1rem;">
-        <div style="background: #0369a1; color: white; padding: 1rem; border-radius: 50%; font-size: 1.2rem;">🔒</div>
-        <div>
-            <h4 style="color: #1e40af; margin: 0 0 0.5rem 0; font-size: 1.1rem;">Secure & Balanced Protection</h4>
-            <p style="color: #1e40af; margin: 0; font-size: 0.95rem;">Your therapeutic content is protected with enterprise-grade encryption and HIPAA compliance. Like balanced stones, your data remains stable and secure, automatically removed after 30 days.</p>
+    <div style="background: #f8fafc; border-radius: 15px; padding: 2rem; margin: 3rem 0; border: 1px solid #e2e8f0; max-width: 800px; margin-left: auto; margin-right: auto;">
+        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+            <div style="background: #10b981; color: white; padding: 0.8rem; border-radius: 12px; margin-right: 1rem;">
+                <span style="font-size: 1.2rem;">🔒</span>
+            </div>
+            <h3 style="color: #374151; margin: 0; font-size: 1.3rem; font-weight: 600;">Secure & Balanced Protection</h3>
         </div>
+        <p style="color: #6b7280; margin: 0; font-size: 1rem; line-height: 1.6;">
+            Your therapeutic content is protected with enterprise-grade encryption and HIPAA compliance. Like balanced stones, your data remains stable and secure, automatically removed after 30 days.
+        </p>
     </div>
     """, unsafe_allow_html=True)
     
