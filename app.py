@@ -273,26 +273,28 @@ def show_upload_interface(services):
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.markdown("""
-        <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb; min-height: 400px;">
-            <div style="background: #6b7280; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
-                <span style="font-size: 2rem;">🎤</span>
+        # Create a container for the Audio Foundation with integrated upload
+        with st.container():
+            st.markdown("""
+            <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb; min-height: 400px;">
+                <div style="background: #6b7280; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
+                    <span style="font-size: 2rem;">🎤</span>
+                </div>
+                <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Audio Foundation</h3>
+                <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Transform spoken sessions into therapeutic insights</p>
+                <div style="color: #6b7280; margin-bottom: 2rem; font-size: 0.85rem;">
+                    <span style="font-weight: 600;">MP3, WAV, M4A</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 500MB</span>
+                </div>
             </div>
-            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Audio Foundation</h3>
-            <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Transform spoken sessions into therapeutic insights</p>
-            <div style="color: #6b7280; margin-bottom: 2rem; font-size: 0.85rem;">
-                <span style="font-weight: 600;">MP3, WAV, M4A</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 500MB</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Functional audio file uploader
-        uploaded_audio = st.file_uploader(
-            "Browse files",
-            type=['mp3', 'wav', 'mp4', 'm4a', 'ogg', 'flac', 'aac'],
-            key="audio_upload",
-            help="Upload audio files for transcription and analysis"
-        )
+            """, unsafe_allow_html=True)
+            
+            # Functional audio file uploader positioned within the card area
+            uploaded_audio = st.file_uploader(
+                "Browse files",
+                type=['mp3', 'wav', 'mp4', 'm4a', 'ogg', 'flac', 'aac'],
+                key="audio_upload",
+                help="Upload audio files for transcription and analysis"
+            )
         
         if uploaded_audio:
             st.success(f"File uploaded: {uploaded_audio.name}")
@@ -301,26 +303,28 @@ def show_upload_interface(services):
 
     
     with col2:
-        st.markdown("""
-        <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb; min-height: 400px;">
-            <div style="background: #d97706; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
-                <span style="font-size: 2rem;">📄</span>
+        # Create a container for the Text Pillar with integrated upload
+        with st.container():
+            st.markdown("""
+            <div style="background: white; border-radius: 20px; padding: 2rem; margin: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e5e7eb; min-height: 400px;">
+                <div style="background: #d97706; color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; display: inline-block;">
+                    <span style="font-size: 2rem;">📄</span>
+                </div>
+                <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Text Pillar</h3>
+                <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Direct analysis of written therapeutic content</p>
+                <div style="color: #6b7280; margin-bottom: 2rem; font-size: 0.85rem;">
+                    <span style="font-weight: 600;">TXT, DOC, PDF</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 50MB</span>
+                </div>
             </div>
-            <h3 style="color: #374151; margin-bottom: 1rem; font-size: 1.4rem; font-weight: 600;">Text Pillar</h3>
-            <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">Direct analysis of written therapeutic content</p>
-            <div style="color: #6b7280; margin-bottom: 2rem; font-size: 0.85rem;">
-                <span style="font-weight: 600;">TXT, DOC, PDF</span> <span style="margin: 0 0.5rem;">•</span> <span style="font-weight: 600;">Up to 50MB</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Functional text file uploader
-        uploaded_transcript = st.file_uploader(
-            "Browse files",
-            type=['txt', 'doc', 'docx', 'pdf'],
-            key="transcript_upload",
-            help="Upload text documents for analysis"
-        )
+            """, unsafe_allow_html=True)
+            
+            # Functional text file uploader positioned within the card area
+            uploaded_transcript = st.file_uploader(
+                "Browse files",
+                type=['txt', 'doc', 'docx', 'pdf'],
+                key="transcript_upload",
+                help="Upload text documents for analysis"
+            )
         
         if uploaded_transcript:
             st.success(f"File uploaded: {uploaded_transcript.name}")
