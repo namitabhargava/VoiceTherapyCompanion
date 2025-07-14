@@ -1447,13 +1447,99 @@ def display_analysis_results(analysis):
             </div>
             """, unsafe_allow_html=True)
     
-    # Therapist evaluation
+    # Expert therapist evaluation
+    expert_evaluation = analysis.get('expert_therapist_evaluation')
+    if expert_evaluation:
+        display_expert_therapist_evaluation(expert_evaluation)
+    
+    # Regular therapist evaluation (legacy)
     therapist_evaluation = analysis.get('therapist_evaluation')
-    if therapist_evaluation:
+    if therapist_evaluation and not expert_evaluation:
         display_therapist_evaluation(therapist_evaluation)
     
     # Progress summary
     show_progress_summary(analysis)
+
+def display_expert_therapist_evaluation(expert_evaluation):
+    """Display expert-level therapist evaluation results"""
+    st.subheader("🎯 Expert Therapist Assessment")
+    st.markdown("*Based on principles from Rogers, Beck, Freud, Jung, Yalom, and other leading therapeutic experts*")
+    
+    # Main assessment scores
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        empathy_score = expert_evaluation.get('therapist_empathy_score', 6)
+        empathy_color = '#28a745' if empathy_score >= 8 else '#ffc107' if empathy_score >= 6 else '#dc3545'
+        
+        st.markdown(f"""
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; margin: 1rem 0; border: 2px solid {empathy_color};">
+            <h4 style="color: {empathy_color}; margin: 0 0 0.5rem 0;">Empathy & Attunement</h4>
+            <div style="font-size: 2rem; font-weight: bold; color: {empathy_color};">{empathy_score}/10</div>
+            <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.9rem;">Emotional resonance and psychological safety</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        fit_score = expert_evaluation.get('therapist_fit_score', 6)
+        fit_color = '#28a745' if fit_score >= 8 else '#ffc107' if fit_score >= 6 else '#dc3545'
+        
+        st.markdown(f"""
+        <div style="background: white; border-radius: 12px; padding: 1.5rem; margin: 1rem 0; border: 2px solid {fit_color};">
+            <h4 style="color: {fit_color}; margin: 0 0 0.5rem 0;">Therapist Fit Score</h4>
+            <div style="font-size: 2rem; font-weight: bold; color: {fit_color};">{fit_score}/10</div>
+            <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.9rem;">Alignment with client needs and connection</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Evidence and insights
+    evidence = expert_evaluation.get('empathy_evidence', [])
+    if evidence:
+        st.markdown("**Evidence of Empathy & Attunement:**")
+        for item in evidence:
+            st.markdown(f"• {item}")
+    
+    # Therapeutic techniques
+    techniques = expert_evaluation.get('therapeutic_techniques', [])
+    if techniques:
+        st.markdown("**Therapeutic Approaches Used:**")
+        for technique in techniques:
+            st.markdown(f"• {technique}")
+    
+    # Burnout assessment
+    burnout_signs = expert_evaluation.get('burnout_signs', {})
+    if burnout_signs.get('present'):
+        st.warning(f"⚠️ **Potential Concerns:** {burnout_signs.get('explanation', 'Signs of therapist disengagement detected')}")
+    else:
+        st.info(f"✅ **Professional Engagement:** {burnout_signs.get('explanation', 'No signs of burnout or disengagement detected')}")
+    
+    # Client progress
+    progress = expert_evaluation.get('client_progress', {})
+    if progress.get('present'):
+        st.success("📈 **Progress Signals Detected**")
+        examples = progress.get('examples', [])
+        if examples:
+            for example in examples:
+                st.markdown(f"• {example}")
+    else:
+        st.info("📊 **Progress Monitoring:** Continue tracking progress in future sessions")
+    
+    # Professional recommendations
+    recommendations = expert_evaluation.get('client_recommendations', [])
+    if recommendations:
+        st.markdown("### 🎯 Professional Recommendations")
+        for i, rec in enumerate(recommendations, 1):
+            st.markdown(f"""
+            <div style="background: #e8f5e8; border-radius: 8px; padding: 1rem; margin: 0.5rem 0; border-left: 3px solid #28a745;">
+                <strong>Recommendation {i}:</strong> {rec}
+            </div>
+            """, unsafe_allow_html=True)
+    
+    # Fit justification
+    fit_justification = expert_evaluation.get('fit_justification', '')
+    if fit_justification:
+        st.markdown("**Professional Assessment:**")
+        st.markdown(fit_justification)
 
 def display_therapist_evaluation(therapist_evaluation):
     """Display therapist evaluation results"""

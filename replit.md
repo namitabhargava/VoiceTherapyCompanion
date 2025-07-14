@@ -23,6 +23,7 @@ User-friendly analysis: User requested analysis results in more user-friendly te
 PDF upload support: User requested ability to upload PDF files for transcript analysis.
 Enhanced negative detection: User requested better detection of when therapy is not working well, especially negative outcomes.
 Privacy-focused: User requested uploaded files be deleted after analysis to ensure no sensitive data is permanently stored.
+Expert therapist evaluation: User requested more accurate therapist analysis based on comprehensive therapeutic principles from leading psychologists.
 
 ## System Architecture
 
@@ -49,11 +50,20 @@ Privacy-focused: User requested uploaded files be deleted after analysis to ensu
 
 ### Core Services
 1. **TranscriptionService**: Handles audio-to-text conversion using OpenAI Whisper
-2. **AnalysisService**: Performs therapeutic analysis using multiple psychological frameworks with enhanced negative pattern detection
+2. **AnalysisService**: Performs therapeutic analysis using multiple psychological frameworks with enhanced negative pattern detection and expert-level therapist evaluation
 3. **VAPIService**: Manages voice interactions for asking questions about sessions
 4. **SessionManager**: Handles session persistence and retrieval
 5. **PDFService**: Generates downloadable progress reports
 6. **FileHandler**: Processes different file types including PDF text extraction
+
+### Expert Therapist Evaluation System
+The system now includes comprehensive therapist assessment based on principles from 15+ leading therapeutic experts including:
+- **Empathy & Attunement Assessment**: Measures active listening, emotional resonance, and psychological safety
+- **Therapeutic Technique Analysis**: Identifies and evaluates specific therapeutic approaches (CBT, DBT, person-centered, etc.)
+- **Burnout Detection**: Screens for signs of therapist disengagement, hopelessness, or lack of structure
+- **Client Progress Monitoring**: Detects meaningful cognitive, emotional, and behavioral shifts
+- **Therapist Fit Scoring**: Rates alignment with client needs and relational connection (1-10 scale)
+- **Professional Recommendations**: Provides actionable guidance for clients about continuing or changing therapy
 
 ### Authentication Services
 - **AuthService**: Manages OAuth flows for video conferencing platforms
