@@ -1369,24 +1369,3 @@ Each theorist should be concise (2-3 sentences), insightful, and non-repetitive.
                 "raw_evaluation": "Professional evaluation recommended for comprehensive assessment"
             }
         
-     # Add chorus analysis automatically
-        chorus_analysis = self.analyze_as_chorus(transcript)
-
-        return {
-            'domain_scores': adjusted_scores,
-            'detailed_analysis': detailed_analysis,
-            'multi_assessment_results': multi_assessment_results,
-            'negative_patterns': negative_patterns,
-            'key_insights': overall_insights['insights'],
-            'recommendations': overall_insights['recommendations'],
-            'session_themes': overall_insights['themes'],
-            'progress_indicators': overall_insights['progress_indicators'],
-            'therapy_effectiveness': self._assess_therapy_effectiveness(adjusted_scores, negative_patterns),
-            'warning_signs': self._generate_warning_signs(negative_patterns),
-            'expert_therapist_evaluation': expert_evaluation,
-            'therapist_evaluation': therapist_evaluation,
-            'chorus_analysis': chorus_analysis,  # <--- Add this line
-            'analysis_timestamp': datetime.now().isoformat()
-        }
-
-    # Remove stray except block and dedent the following lines if necessary
