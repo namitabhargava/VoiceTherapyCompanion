@@ -118,64 +118,67 @@ class AnalysisService:
         """Comprehensive analysis of therapy session using multiple frameworks"""
         try:
             st.info("Analyzing session with multiple therapeutic frameworks...")
-            
+
             # First, detect negative patterns and warning signs
             negative_patterns = self._detect_negative_patterns(transcript)
-            
+
             # Domain-specific analyses
             domain_scores = {}
             detailed_analysis = {}
-            
+
             # 1. Emotional safety & relational depth (Rogers)
             rogers_analysis = self._analyze_rogers_framework(transcript)
             domain_scores['emotional_safety'] = rogers_analysis['score']
             detailed_analysis['rogers'] = rogers_analysis
-            
+
             # 2. Unconscious pattern emergence (Freud, Klein)
             psychodynamic_analysis = self._analyze_psychodynamic_framework(transcript)
             domain_scores['unconscious_patterns'] = psychodynamic_analysis['score']
             detailed_analysis['psychodynamic'] = psychodynamic_analysis
-            
+
             # 3. Cognitive restructuring (Ellis, Beck)
             cognitive_analysis = self._analyze_cognitive_framework(transcript)
             domain_scores['cognitive_restructuring'] = cognitive_analysis['score']
             detailed_analysis['cognitive'] = cognitive_analysis
-            
+
             # 4. Communication/family role changes (Satir)
             family_analysis = self._analyze_family_systems_framework(transcript)
             domain_scores['communication_changes'] = family_analysis['score']
             detailed_analysis['family_systems'] = family_analysis
-            
+
             # 5. Strengths and well-being (Seligman)
             positive_analysis = self._analyze_positive_psychology_framework(transcript)
             domain_scores['strengths_wellbeing'] = positive_analysis['score']
             detailed_analysis['positive_psychology'] = positive_analysis
-            
+
             # 6. Narrative/identity coherence
             narrative_analysis = self._analyze_narrative_framework(transcript)
             domain_scores['narrative_coherence'] = narrative_analysis['score']
             detailed_analysis['narrative'] = narrative_analysis
-            
+
             # 7. Behavioral activation in real life
             behavioral_analysis = self._analyze_behavioral_framework(transcript)
             domain_scores['behavioral_activation'] = behavioral_analysis['score']
             detailed_analysis['behavioral'] = behavioral_analysis
-            
+
             # Adjust scores based on negative patterns detected
             adjusted_scores = self._adjust_scores_for_negative_patterns(domain_scores, negative_patterns)
-            
+
             # Conduct comprehensive multi-method, multi-source assessment
             multi_assessment_results = self.multi_assessment.conduct_comprehensive_assessment(transcript)
-            
+
             # Generate overall insights and recommendations
             overall_insights = self._generate_overall_insights(transcript, detailed_analysis, negative_patterns)
-            
+
             # Conduct expert-level therapist evaluation
             expert_evaluation = self._conduct_expert_therapist_evaluation(transcript)
-            
+
             # Evaluate therapist performance (existing method)
             therapist_evaluation = self._evaluate_therapist_performance(transcript, detailed_analysis, negative_patterns)
-            
+
+            # Add chorus analysis automatically
+            chorus_analysis = self.analyze_as_chorus(transcript)
+
             return {
                 'domain_scores': adjusted_scores,
                 'detailed_analysis': detailed_analysis,
@@ -189,9 +192,10 @@ class AnalysisService:
                 'warning_signs': self._generate_warning_signs(negative_patterns),
                 'expert_therapist_evaluation': expert_evaluation,
                 'therapist_evaluation': therapist_evaluation,
+                'chorus_analysis': chorus_analysis,
                 'analysis_timestamp': datetime.now().isoformat()
             }
-            
+
         except Exception as e:
             st.error(f"Analysis error: {str(e)}")
             return None
@@ -1131,6 +1135,46 @@ class AnalysisService:
         
         return result
     
+    def analyze_as_chorus(self, transcript):
+        """
+        Analyze the session as a 'chorus' of eight theorists, each building on the previous,
+        avoiding repetition, and offering unique insights.
+        """
+        prompt = f"""
+You are a panel of eight world-renowned psychotherapy theorists:
+1. Carl Rogers (Person-Centered)
+2. Sigmund Freud (Psychoanalysis)
+3. Melanie Klein (Object Relations)
+4. Aaron Beck (Cognitive Therapy)
+5. Albert Ellis (REBT)
+6. Virginia Satir (Family Systems)
+7. Martin Seligman (Positive Psychology)
+8. Irvin Yalom (Existential Therapy)
+
+You will analyze the following therapy session transcript as a roundtable discussion. Each theorist will:
+- Comment in turn, building on previous remarks.
+- Offer unique insights from their framework.
+- Avoid repeating points already made.
+- Reference or respond to earlier comments if relevant.
+
+**Transcript:**  
+{transcript}
+
+**Format your response as:**
+Rogers: [unique insight]  
+Freud: [builds on Rogers, adds unique insight]  
+Klein: [builds on above, adds unique insight]  
+Beck: [builds on above, adds unique insight]  
+Ellis: [builds on above, adds unique insight]  
+Satir: [builds on above, adds unique insight]  
+Seligman: [builds on above, adds unique insight]  
+Yalom: [builds on above, adds unique insight]
+
+Each theorist should be concise (2-3 sentences), insightful, and non-repetitive.
+        """
+
+        return self._analyze_with_providers(prompt, "Chorus of eight psychotherapy theorists")
+    
     def answer_query(self, query, session_data):
         """Answer specific questions about the therapy session"""
         try:
@@ -1324,3 +1368,25 @@ class AnalysisService:
                 ],
                 "raw_evaluation": "Professional evaluation recommended for comprehensive assessment"
             }
+        
+     # Add chorus analysis automatically
+        chorus_analysis = self.analyze_as_chorus(transcript)
+
+        return {
+            'domain_scores': adjusted_scores,
+            'detailed_analysis': detailed_analysis,
+            'multi_assessment_results': multi_assessment_results,
+            'negative_patterns': negative_patterns,
+            'key_insights': overall_insights['insights'],
+            'recommendations': overall_insights['recommendations'],
+            'session_themes': overall_insights['themes'],
+            'progress_indicators': overall_insights['progress_indicators'],
+            'therapy_effectiveness': self._assess_therapy_effectiveness(adjusted_scores, negative_patterns),
+            'warning_signs': self._generate_warning_signs(negative_patterns),
+            'expert_therapist_evaluation': expert_evaluation,
+            'therapist_evaluation': therapist_evaluation,
+            'chorus_analysis': chorus_analysis,  # <--- Add this line
+            'analysis_timestamp': datetime.now().isoformat()
+        }
+
+    # Remove stray except block and dedent the following lines if necessary
